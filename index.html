@@ -6,6 +6,19 @@
     <title>Dashboard</title>
     <link rel="icon" type="image/svg+xml" href="/hammer.svg">
     <style>
+        :root {
+            --bg-main: #111827;
+            --bg-panel: #1f2937;
+            --bg-darker: #111827;
+            --border-color: #374151;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --text-dim: #6b7280;
+            --accent-color: #10b981;
+            --accent-bg: rgba(16, 185, 129, 0.15);
+            --highlight-color: #fbbf24; /* Luminous Gold */
+        }
+
         /* 1. Dracula Theme (Sleek Dark Purple) */
         body[data-theme="dracula"] {
             --bg-main: #282a36;
@@ -15,9 +28,9 @@
             --text-main: #f8f8f2;
             --text-muted: #f8f8f2;
             --text-dim: #6272a4;
-            --accent-color: #bd93f9;      /* Purple Accent */
+            --accent-color: #bd93f9;      
             --accent-bg: rgba(189, 147, 249, 0.15);
-            --highlight-color: #ff79c6;   /* Hot Pink Highlights */
+            --highlight-color: #ff79c6;   /* Hot Pink */
         }
 
         /* 2. Monokai Theme (Classic Retro Dev Dark) */
@@ -29,7 +42,7 @@
             --text-main: #f8f8f2;
             --text-muted: #f8f8f2;
             --text-dim: #75715e;
-            --accent-color: #a6e22e;      /* Monokai Bright Green */
+            --accent-color: #a6e22e;      
             --accent-bg: rgba(166, 226, 46, 0.15);
             --highlight-color: #f92672;   /* Vivid Pink Highlight */
         }
@@ -43,35 +56,23 @@
             --text-main: #24292f;
             --text-muted: #57606a;
             --text-dim: #8c959f;
-            --accent-color: #0969da;      /* GitHub Blue */
+            --accent-color: #0969da;      
             --accent-bg: rgba(9, 105, 218, 0.1);
             --highlight-color: #bc4c00;   /* Deep Orange Highlight */
         }
 
-        /* 4. Minimalist Light Theme Option */
+        /* 4. Minimalist Light Theme Option (Fixed Target Selector!) */
         body[data-theme="light"] {
-            --bg-main: #f3f4f6;
-            --bg-panel: #ffffff;
-            --bg-darker: #e5e7eb;
-            --border-color: #d1d5db;
-            --text-main: #111827;
-            --text-muted: #4b5563;
-            --text-dim: #6b7280;
-            --accent-bg: rgba(16, 185, 129, 0.1);
-            --highlight-color: #b45309;   /* Deep Amber Orange */
-        }
-
-        :root {
-            --bg-main: #111827;
-            --bg-panel: #1f2937;
-            --bg-darker: #111827;
-            --border-color: #374151;
-            --text-main: #f9fafb;
-            --text-muted: #9ca3af;
-            --text-dim: #6b7280;
+            --bg-main: #f3f4f6;       
+            --bg-panel: #ffffff;      
+            --bg-darker: #e5e7eb;     
+            --border-color: #d1d5db;  
+            --text-main: #111827;     
+            --text-muted: #4b5563;    
+            --text-dim: #6b7280;      
             --accent-color: #10b981;
-            --accent-bg: rgba(16, 185, 129, 0.15);
-            --highlight-color: #fbbf24;
+            --accent-bg: rgba(16, 185, 129, 0.1); 
+            --highlight-color: #b45309;   /* Deep Amber Bronze */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -221,11 +222,11 @@
 <body>
 
     <select id="themeSelector" style="background: var(--bg-darker); color: var(--text-main); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 1.1rem; outline: none;">
-        <option value="default">Default Dark</option>
+        <option value="default">Default Dark 🌌</option>
+        <option value="light">Light ☀️</option>
         <option value="dracula">Dracula 🧛</option>
         <option value="monokai">Monokai 🕹️</option>
-        <option value="github-light">GitHub Light ☀️</option>
-        <option value="light">Light ☀️</option>
+        <option value="github-light">GitHub Light 🐙</option>
     </select>
 
     <div class="landing-zone">
