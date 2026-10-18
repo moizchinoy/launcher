@@ -275,7 +275,7 @@
             var query = input.value.trim().toLowerCase().replace(/\s+/g, '');
 
             searchResults.forEach(function(item, index) {
-                var isCurrent = index === selectedIndex;
+                var isCurrent = selectedIndex >= 0 && index === selectedIndex;
 
                 var itemDiv = document.createElement('div');
                 itemDiv.className = 'row-item ' + (isCurrent ? 'active' : '');
@@ -324,7 +324,7 @@
 
         input.oninput = function() {
             searchResults = nativeFuzzyMatch(input.value.trim(), flatBookmarks);
-            selectedIndex = 0;
+            selectedIndex = -1;
             renderResults();
         };
 
@@ -335,7 +335,7 @@
                 input.focus();
                 input.value = '';
                 searchResults = flatBookmarks.slice();
-                selectedIndex = 0;
+                selectedIndex = -1;
                 renderResults();
                 return;
             }
@@ -347,15 +347,15 @@
                 input.blur();
             } else if (e.key === 'ArrowDown') {
                 e.preventDefault();
-                selectedIndex = (selectedIndex + 1) % searchResults.length;
+                selectedIndex = selectedIndex === -1 ? 0 : (selectedIndex + 1) % searchResults.length;
                 renderResults();
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
-                selectedIndex = (selectedIndex - 1 + searchResults.length) % searchResults.length;
+                selectedIndex = selectedIndex === -1 ? (searchResults.length - 1) : (selectedIndex - 1 + searchResults.length) % searchResults.length;
                 renderResults();
             } else if (e.key === 'Enter') {
                 e.preventDefault();
-                if (searchResults[selectedIndex]) {
+                if (selectedIndex >= 0 && searchResults[selectedIndex]) {
                     var target = e.ctrlKey ? '_blank' : '_self';
                     window.open(searchResults[selectedIndex].url, target);
                 }
