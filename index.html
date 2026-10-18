@@ -347,12 +347,29 @@
                 input.blur();
             } else if (e.key === 'ArrowDown') {
                 e.preventDefault();
-                selectedIndex = selectedIndex === -1 ? 0 : (selectedIndex + 1) % searchResults.length;
-                renderResults();
+                if (searchResults.length > 0) {
+                    // If we are at the very bottom item, wrap back to unselected (-1)
+                    if (selectedIndex === searchResults.length - 1) {
+                        selectedIndex = -1;
+                    } else {
+                        selectedIndex++;
+                    }
+                    renderResults();
+                }
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
-                selectedIndex = selectedIndex === -1 ? (searchResults.length - 1) : (selectedIndex - 1 + searchResults.length) % searchResults.length;
-                renderResults();
+                if (searchResults.length > 0) {
+                    // If we are at the very top item (0), move up to unselected (-1)
+                    if (selectedIndex === 0) {
+                        selectedIndex = -1;
+                    } else if (selectedIndex === -1) {
+                        // If currently unselected, ArrowUp wraps clean to the bottom item
+                        selectedIndex = searchResults.length - 1;
+                    } else {
+                        selectedIndex--;
+                    }
+                    renderResults();
+                }
             } else if (e.key === 'Enter') {
                 e.preventDefault();
                 if (selectedIndex >= 0 && searchResults[selectedIndex]) {
