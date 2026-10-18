@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="/hammer.svg">
+    <style>
+        :root {
+            --bg-main: #111827;
+            --bg-panel: #1f2937;
+            --bg-darker: #111827;
+            --border-color: #374151;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --text-dim: #6b7280;
+            --accent-color: #10b981;
+            --accent-bg: rgba(16, 185, 129, 0.15);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .landing-zone { text-align: center; }
+        .landing-title { font-size: 2.25rem; font-weight: 800; color: var(--text-muted); margin-bottom: 16px; }
+        .landing-tip { color: var(--text-dim); font-size: 0.875rem; }
+        
+        kbd {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: var(--text-main);
+        }
+
+        .status-badge {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-family: monospace;
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            color: #fbbf24;
+        }
+        .status-success { background-color: #064e3b; border-color: #059669; color: #34d399; }
+        .status-error { background-color: #4c1d1d; border-color: #dc2626; color: #f87171; text-align: left; max-width: 500px; }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: start;
+            justify-content: center;
+            padding-top: 15vh;
+            z-index: 50;
+        }
+        .hidden { display: none !important; }
+
+        .search-panel {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 650px;
+            border-radius: 12px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .search-header {
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: rgba(0,0,0,0.1);
+        }
+        .search-icon { font-size: 1.25rem; margin-right: 12px; }
+        .search-input {
+            width: 100%;
+            padding: 16px 0;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-main);
+            font-size: 1rem;
+        }
+        .search-input::placeholder { color: var(--text-dim); }
+        
+        .item-counter {
+            font-size: 0.75rem;
+            font-family: monospace;
+            color: var(--text-dim);
+            background-color: var(--bg-darker);
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-left: 8px;
+            white-space: nowrap;
+        }
+
+        .results-list {
+            max-height: 350px;
+            overflow-y: auto;
+            padding: 8px;
+        }
+        .results-list::-webkit-scrollbar { width: 6px; }
+        .results-list::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 3px; }
+
+        .row-item {
+            display: flex;
+            flex-direction: column;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+            margin-bottom: 2px;
+        }
+        .row-item:hover { background-color: rgba(255,255,255,0.02); }
+        .row-item.active {
+            background-color: var(--accent-bg);
+            border-left-color: var(--accent-color);
+        }
+
+        .row-title { font-size: 0.875rem; font-weight: 500; color: #e5e7eb; }
+        .row-item.active .row-title { color: var(--accent-color); }
+        .row-url { font-size: 0.75rem; color: var(--text-dim); font-family: monospace; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        .search-footer {
+            padding: 8px 16px;
+            background-color: var(--bg-darker);
+            font-size: 11px;
+            color: var(--text-dim);
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid var(--border-color);
+            font-family: monospace;
+        }
+        .highlight-green { color: #34d399; }
+        .highlight-red { color: #f87171; }
+    </style>
+</head>
+<body>
+
+    <div class="landing-zone">
+        <h1 class="landing-title">Welcome</h1>
+        <p class="landing-tip">Press <kbd>/</kbd> to search bookmarks</p>
+        <div id="statusMessage" class="status-badge">
+            🔄 Loading bookmarks from Python server...
+        </div>
+    </div>
+
+    <div id="searchModal" class="modal-overlay hidden">
+        <div class="search-panel">
+            <div class="search-header">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Fuzzy search bookmarks..." class="search-input" autocomplete="off">
+                <span id="itemCounter" class="item-counter">0/0</span>
+            </div>
+            <div id="resultsList" class="results-list"></div>
+            <div class="search-footer">
+                <div><span class="highlight-green">↑↓</span> Navigate • <span class="highlight-green">Enter</span> Open • <span class="highlight-green">Tab</span> Multi-select</div>
+                <div><span class="highlight-red">ESC</span> Close</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let flatBookmarks = [];
+        let searchResults = [];
+        let selectedIndex = 0;
+        let selectedUrls = new Set();
+
+        const modal = document.getElementById('searchModal');
+        const input = document.getElementById('searchInput');
+        const list = document.getElementById('resultsList');
+        const counter = document.getElementById('itemCounter');
+        const statusMessage = document.getElementById('statusMessage');
+
+        function nativeFuzzyMatch(query, items) {
+            if (!query) return items;
+            
+            var cleanQuery = query.toLowerCase().replace(/\s+/g, '');
+            var scoredItems = items.map(function(item) {
+                var text = item.displayName.toLowerCase();
+                var score = 0;
+                var queryIdx = 0;
+                
+                for (var i = 0; i < text.length && queryIdx < cleanQuery.length; i++) {
+                    if (text[i] === cleanQuery[queryIdx]) {
+                        score += (10 - Math.min(i, 5)); 
+                        queryIdx++;
+                    }
+                }
+                
+                if (text.indexOf(query.toLowerCase()) !== -1) {
+                    score += 50;
+                }
+
+                return { item: item, matches: queryIdx === cleanQuery.length, score: score };
+            });
+
+            return scoredItems
+                .filter(function(res) { return res.matches; })
+                .sort(function(a, b) { return b.score - a.score; })
+                .map(function(res) { return res.item; });
+        }
+
+        async function loadBookmarks() {
+            try {
+                var response = await fetch('bookmarks.json?v=' + Date.now());
+                if (!response.ok) throw new Error('HTTP Error Status: ' + response.status);
+                
+                var text = await response.text();
+                var data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    throw new Error('JSON structural parse crash: ' + e.message);
+                }
+
+                flatBookmarks = [];
+                data.forEach(function(group) {
+                    var category = group.category || '';
+                    if (group.links && Array.isArray(group.links)) {
+                        group.links.forEach(function(link) {
+                            var displayName = category.length > 0 ? (category + ' - ' + link.name) : link.name;
+                            flatBookmarks.push({ displayName: displayName, url: link.url });
+                        });
+                    }
+                });
+
+                searchResults = flatBookmarks.slice();
+                renderResults();
+
+                statusMessage.className = "status-badge status-success";
+                statusMessage.innerHTML = "✅ Loaded <b>" + flatBookmarks.length + "</b> local bookmarks natively!";
+            } catch (err) {
+                statusMessage.className = "status-badge status-error";
+                statusMessage.innerHTML = "❌ <b>Error:</b> " + err.message;
+                console.error(err);
+            }
+        }
+
+        function renderResults() {
+            if (searchResults.length === 0) {
+                list.innerHTML = '<div style="padding:16px;color:#6b7280;text-align:center;font-size:14px;">No matches found</div>';
+                counter.textContent = '0/' + flatBookmarks.length;
+                return;
+            }
+
+            counter.textContent = searchResults.length + '/' + flatBookmarks.length;
+            list.innerHTML = '';
+
+            searchResults.forEach(function(item, index) {
+                var isCurrent = index === selectedIndex;
+                var isMultiSelected = selectedUrls.has(item.url);
+
+                var itemDiv = document.createElement('div');
+                itemDiv.className = 'row-item ' + (isCurrent ? 'active' : '');
+                
+                var titleSpan = document.createElement('span');
+                titleSpan.className = 'row-title';
+                titleSpan.textContent = (isMultiSelected ? ' > ' : '') + item.displayName;
+
+                var urlSpan = document.createElement('span');
+                urlSpan.className = 'row-url';
+                urlSpan.textContent = '🔗 ' + item.url;
+
+                itemDiv.appendChild(titleSpan);
+                itemDiv.appendChild(urlSpan);
+
+                itemDiv.onclick = function() { window.open(item.url, '_blank'); };
+                list.appendChild(itemDiv);
+            });
+
+            var activeEl = list.children[selectedIndex];
+            if (activeEl) activeEl.scrollIntoView({ block: 'nearest' });
+        }
+
+        input.oninput = function() {
+            searchResults = nativeFuzzyMatch(input.value.trim(), flatBookmarks);
+            selectedIndex = 0;
+            renderResults();
+        };
+
+        window.onkeydown = function(e) {
+            if (e.key === '/' && modal.classList.contains('hidden')) {
+                e.preventDefault();
+                modal.classList.remove('hidden');
+                input.focus();
+                input.value = '';
+                searchResults = flatBookmarks.slice();
+                selectedIndex = 0;
+                selectedUrls.clear();
+                renderResults();
+                return;
+            }
+
+            if (modal.classList.contains('hidden')) return;
+
+            if (e.key === 'Escape') {
+                modal.classList.add('hidden');
+                input.blur();
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex + 1) % searchResults.length;
+                renderResults();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex - 1 + searchResults.length) % searchResults.length;
+                renderResults();
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                if (searchResults[selectedIndex]) {
+                    var currentUrl = searchResults[selectedIndex].url;
+                    if (selectedUrls.has(currentUrl)) {
+                        selectedUrls.delete(currentUrl);
+                    } else {
+                        selectedUrls.add(currentUrl);
+                    }
+                    selectedIndex = (selectedIndex + 1) % searchResults.length;
+                    renderResults();
+                }
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (selectedUrls.size > 0) {
+                    selectedUrls.forEach(function(url) { window.open(url, '_blank'); });
+                } else if (searchResults[selectedIndex]) {
+                    window.open(searchResults[selectedIndex].url, '_blank');
+                }
+                modal.classList.add('hidden');
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', loadBookmarks);
+    </script>
+</body>
+</html>
