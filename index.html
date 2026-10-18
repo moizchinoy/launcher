@@ -285,7 +285,10 @@
                 itemDiv.appendChild(titleSpan);
                 itemDiv.appendChild(urlSpan);
 
-                itemDiv.onclick = function() { window.open(item.url, '_blank'); };
+                itemDiv.onclick = function() { 
+                    window.open(item.url, '_blank'); 
+                    input.focus(); // Prevents losing focus after a click action
+                };
                 list.appendChild(itemDiv);
             });
 
@@ -341,10 +344,14 @@
                 e.preventDefault();
                 if (selectedUrls.size > 0) {
                     selectedUrls.forEach(function(url) { window.open(url, '_blank'); });
+                    selectedUrls.clear(); // Clears multi-selection queue after opening them
                 } else if (searchResults[selectedIndex]) {
                     window.open(searchResults[selectedIndex].url, '_blank');
                 }
-                modal.classList.add('hidden');
+                // Kept open! We just force focus back onto the input field 
+                // so you can immediately type your next query
+                input.focus();
+                renderResults();
             }
         };
 
