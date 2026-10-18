@@ -6,6 +6,48 @@
     <title>Dashboard</title>
     <link rel="icon" type="image/svg+xml" href="/hammer.svg">
     <style>
+        /* 1. Dracula Theme (Sleek Dark Purple) */
+        body[data-theme="dracula"] {
+            --bg-main: #282a36;
+            --bg-panel: #44475a;
+            --bg-darker: #191a21;
+            --border-color: #6272a4;
+            --text-main: #f8f8f2;
+            --text-muted: #f8f8f2;
+            --text-dim: #6272a4;
+            --accent-color: #bd93f9;      /* Purple Accent */
+            --accent-bg: rgba(189, 147, 249, 0.15);
+            --highlight-color: #ff79c6;   /* Hot Pink Highlights */
+        }
+
+        /* 2. Monokai Theme (Classic Retro Dev Dark) */
+        body[data-theme="monokai"] {
+            --bg-main: #272822;
+            --bg-panel: #3e3d32;
+            --bg-darker: #1e1f1c;
+            --border-color: #75715e;
+            --text-main: #f8f8f2;
+            --text-muted: #f8f8f2;
+            --text-dim: #75715e;
+            --accent-color: #a6e22e;      /* Monokai Bright Green */
+            --accent-bg: rgba(166, 226, 46, 0.15);
+            --highlight-color: #f92672;   /* Vivid Pink Highlight */
+        }
+
+        /* 3. GitHub Light Theme (Clean Professional Light Mode) */
+        body[data-theme="github-light"] {
+            --bg-main: #f6f8fa;
+            --bg-panel: #ffffff;
+            --bg-darker: #eaeef2;
+            --border-color: #d0d7de;
+            --text-main: #24292f;
+            --text-muted: #57606a;
+            --text-dim: #8c959f;
+            --accent-color: #0969da;      /* GitHub Blue */
+            --accent-bg: rgba(9, 105, 218, 0.1);
+            --highlight-color: #bc4c00;   /* Deep Orange Highlight */
+        }
+
         /* Add this to your style block, replacing your current body.light-theme rules */
         body.light-theme {
             --bg-main: #f3f4f6;       /* Clean light gray background */
@@ -185,21 +227,25 @@
         .search-footer {
             padding: 8px 16px;
             background-color: var(--bg-darker);
-            font-size: 14px;
+            font-size: 18px;
             color: var(--text-dim);
             display: flex;
             justify-content: space-between;
             border-top: 1px solid var(--border-color);
             font-family: monospace;
         }
-        .highlight-green { color: #34d399; }
+        .highlight-green { color: #08de1394; }
         .highlight-red { color: #f87171; }
     </style>
 </head>
 <body>
 
-    <!-- Insert Theme Switcher Button Here -->
-    <button id="themeToggle" style="background:transparent; border:none; cursor:pointer; font-size:1.1rem; padding:4px 8px;">🌓</button>
+    <select id="themeSelector" style="background: var(--bg-darker); color: var(--text-main); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 1.1rem; outline: none;">
+        <option value="default">Default Dark</option>
+        <option value="dracula">Dracula 🧛</option>
+        <option value="monokai">Monokai 🕹️</option>
+        <option value="github-light">GitHub Light ☀️</option>
+    </select>
 
     <div class="landing-zone">
         <h1 class="landing-title">Welcome</h1>
@@ -213,7 +259,7 @@
         <div class="search-panel">
             <div class="search-header">
                 <span class="search-icon">🔍</span>
-                <input type="text" id="searchInput" placeholder="Fuzzy search bookmarks..." class="search-input" autocomplete="off">
+                <input type="text" id="searchInput" placeholder="Search bookmarks..." class="search-input" autocomplete="off">
                 <span id="itemCounter" class="item-counter">0/0</span>
             </div>
             <div id="resultsList" class="results-list"></div>
@@ -430,26 +476,30 @@
 
         window.addEventListener('DOMContentLoaded', loadBookmarks);
 
-        // Add this right above your window.addEventListener('DOMContentLoaded', loadBookmarks); line:
-        const themeToggleBtn = document.getElementById('themeToggle');
+        const themeSelector = document.getElementById('themeSelector');
 
-        // 1. Check for saved theme preferences on boot load
-        if (localStorage.getItem('theme') === 'light') {
-            document.body.classList.add('light-theme');
+        // 1. Read and load the saved theme from memory on startup
+        const savedTheme = localStorage.getItem('theme') || 'default';
+        themeSelector.value = savedTheme;
+        if (savedTheme !== 'default') {
+            document.body.setAttribute('data-theme', savedTheme);
         }
 
-        // 2. Add click handler toggle logic
-        themeToggleBtn.onclick = function() {
-            document.body.classList.toggle('light-theme');
+        // 2. Listen for theme alterations
+        themeSelector.onchange = function() {
+            const selectedTheme = themeSelector.value;
 
-            // Save selection state natively to localStorage
-            if (document.body.classList.contains('light-theme')) {
-                localStorage.setItem('theme', 'light');
+            if (selectedTheme === 'default') {
+                document.body.removeAttribute('data-theme');
             } else {
-                localStorage.setItem('theme', 'dark');
+                document.body.setAttribute('data-theme', selectedTheme);
             }
-            input.focus(); // Prevent losing active text control input state
+
+            // Save state natively to memory
+            localStorage.setItem('theme', selectedTheme);
+            input.focus(); // Prevent losing text control input context
         };
+
     </script>
 </body>
 </html>
