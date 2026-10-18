@@ -1,3 +1,6 @@
+sudo apt update
+sudo apt install podman -y
+
 podman run -d \
   --name launcher \
   --replace \
