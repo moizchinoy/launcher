@@ -48,39 +48,6 @@
             --highlight-color: #bc4c00;   /* Deep Orange Highlight */
         }
 
-        /* Add this to your style block, replacing your current body.light-theme rules */
-        body.light-theme {
-            --bg-main: #f3f4f6;       /* Clean light gray background */
-            --bg-panel: #ffffff;      /* Pure white search card background */
-            --bg-darker: #e5e7eb;     /* Soft footer gray */
-            --border-color: #d1d5db;  /* Soft gray dividers */
-            --text-main: #111827;     /* High-contrast dark charcoal text */
-            --text-muted: #4b5563;    /* Muted gray text */
-            --text-dim: #6b7280;      /* Secondary text label colors */
-            --accent-bg: rgba(16, 185, 129, 0.1); /* Soft green highlight box */
-            --highlight-color: #b45309; /* Deep amber/orange so highlights stay readable on white backgrounds */
-        }
-
-        /* Ensure title text defaults to dark charcoal in light theme */
-        body.light-theme .row-title {
-            color: #111827 !important;
-        }
-
-        /* Keep title text dark charcoal even when the row is actively hovered/focused */
-        body.light-theme .row-item.active .row-title {
-            color: #111827 !important;
-        }
-
-        /* Make row links slightly darker gray for improved visibility */
-        body.light-theme .row-url {
-            color: #4b5563 !important;
-        }
-
-        /* Minor fallback tweak for list item hover state */
-        body.light-theme .row-item:hover {
-            background-color: rgba(0, 0, 0, 0.03);
-        }
-
         :root {
             --bg-main: #111827;
             --bg-panel: #1f2937;
