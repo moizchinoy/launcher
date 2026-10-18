@@ -184,7 +184,6 @@
         let flatBookmarks = [];
         let searchResults = [];
         let selectedIndex = 0;
-        let selectedUrls = new Set();
 
         const modal = document.getElementById('searchModal');
         const input = document.getElementById('searchInput');
@@ -269,14 +268,13 @@
 
             searchResults.forEach(function(item, index) {
                 var isCurrent = index === selectedIndex;
-                var isMultiSelected = selectedUrls.has(item.url);
 
                 var itemDiv = document.createElement('div');
                 itemDiv.className = 'row-item ' + (isCurrent ? 'active' : '');
                 
                 var titleSpan = document.createElement('span');
                 titleSpan.className = 'row-title';
-                titleSpan.textContent = (isMultiSelected ? ' > ' : '') + item.displayName;
+                titleSpan.textContent = item.displayName;
 
                 var urlSpan = document.createElement('span');
                 urlSpan.className = 'row-url';
@@ -311,7 +309,6 @@
                 input.value = '';
                 searchResults = flatBookmarks.slice();
                 selectedIndex = 0;
-                selectedUrls.clear();
                 renderResults();
                 return;
             }
@@ -329,25 +326,9 @@
                 e.preventDefault();
                 selectedIndex = (selectedIndex - 1 + searchResults.length) % searchResults.length;
                 renderResults();
-            } else if (e.key === 'Tab') {
-                e.preventDefault();
-                if (searchResults[selectedIndex]) {
-                    var currentUrl = searchResults[selectedIndex].url;
-                    if (selectedUrls.has(currentUrl)) {
-                        selectedUrls.delete(currentUrl);
-                    } else {
-                        selectedUrls.add(currentUrl);
-                    }
-                    selectedIndex = (selectedIndex + 1) % searchResults.length;
-                    renderResults();
-                }
             } else if (e.key === 'Enter') {
                 e.preventDefault();
-                if (selectedUrls.size > 0) {
-                    // Multi-select actions typically always open in new tabs
-                    selectedUrls.forEach(function(url) { window.open(url, '_blank'); });
-                    selectedUrls.clear(); // Clears multi-selection queue after opening them
-                } else if (searchResults[selectedIndex]) {
+                if (searchResults[selectedIndex]) {
                     var target = e.ctrlKey ? '_blank' : '_self';
                     window.open(searchResults[selectedIndex].url, target);
                 }
