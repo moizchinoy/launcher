@@ -141,6 +141,12 @@
         .row-item.active .row-title { color: var(--accent-color); }
         .row-url { font-size: 0.95rem; color: var(--text-dim); font-family: monospace; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+        /* Add this anywhere inside your <style> block */
+        .highlight-char {
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+
         .search-footer {
             padding: 8px 16px;
             background-color: var(--bg-darker);
@@ -266,6 +272,8 @@
             counter.textContent = searchResults.length + '/' + flatBookmarks.length;
             list.innerHTML = '';
 
+            var query = input.value.trim().toLowerCase().replace(/\s+/g, '');
+
             searchResults.forEach(function(item, index) {
                 var isCurrent = index === selectedIndex;
 
@@ -274,7 +282,26 @@
                 
                 var titleSpan = document.createElement('span');
                 titleSpan.className = 'row-title';
-                titleSpan.textContent = item.displayName;
+
+                // --- CHARACTER LEVEL HIGHLIGHTING ENGINE ---
+                if (query) {
+                    var text = item.displayName;
+                    var highlightedHtml = '';
+                    var queryIdx = 0;
+
+                    for (var i = 0; i < text.length; i++) {
+                        if (queryIdx < query.length && text[i].toLowerCase() === query[queryIdx]) {
+                            highlightedHtml += '<span class="highlight-char">' + text[i] + '</span>';
+                            queryIdx++;
+                        } else {
+                            highlightedHtml += text[i];
+                        }
+                    }
+                    titleSpan.innerHTML = highlightedHtml;
+                } else {
+                    titleSpan.textContent = item.displayName;
+                }
+                // -------------------------------------------
 
                 var urlSpan = document.createElement('span');
                 urlSpan.className = 'row-url';
@@ -284,9 +311,9 @@
                 itemDiv.appendChild(urlSpan);
 
                 itemDiv.onclick = function(e) { 
-                    var target = e.ctrlKey ? '_blank' : '_self';
+                    var target = (e.ctrlKey || e.metaKey) ? '_blank' : '_self';
                     window.open(item.url, target);
-                    input.focus(); // Prevents losing focus after a click action
+                    input.focus();
                 };
                 list.appendChild(itemDiv);
             });
