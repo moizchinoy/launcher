@@ -7,16 +7,17 @@
     <link rel="icon" type="image/svg+xml" href="/hammer.svg">
     <style>
         :root {
-            --bg-main: #111827;
-            --bg-panel: #1f2937;
-            --bg-darker: #111827;
-            --border-color: #374151;
-            --text-main: #f9fafb;
-            --text-muted: #9ca3af;
-            --text-dim: #6b7280;
-            --accent-color: #10b981;
+            --bg-main: #0b0f19;       /* Deep obsidian dark background */
+            --bg-panel: #1f2937;      /* Solid slate search card */
+            --bg-darker: #111827;     /* Clean dark footer */
+            --border-color: #374151;  /* Subtle panel division border */
+            --text-main: #f9fafb;     /* High contrast white titles */
+            --text-muted: #d1d5db;    /* Soft gray category text */
+            --text-dim: #9ca3af;      /* Secondary description tags */
+            --accent-color: #10b981;   /* Smooth emerald green accent */
             --accent-bg: rgba(16, 185, 129, 0.15);
-            --highlight-color: #fbbf24; /* Luminous Gold */
+            --highlight-bg: rgba(251, 191, 36, 0.25); /* Translucent gold badge fill */
+            --highlight-txt: #fde047;                  /* Bright neon yellow character tint */
         }
 
         /* 1. Dracula Theme (Sleek Dark Purple) */
@@ -28,9 +29,10 @@
             --text-main: #f8f8f2;
             --text-muted: #f8f8f2;
             --text-dim: #6272a4;
-            --accent-color: #bd93f9;      
+            --accent-color: #bd93f9;
             --accent-bg: rgba(189, 147, 249, 0.15);
-            --highlight-color: #ff79c6;   /* Hot Pink */
+            --highlight-bg: rgba(255, 121, 198, 0.3); /* Translucent hot pink */
+            --highlight-txt: #ff79c6;
         }
 
         /* 2. Monokai Theme (Classic Retro Dev Dark) */
@@ -42,9 +44,10 @@
             --text-main: #f8f8f2;
             --text-muted: #f8f8f2;
             --text-dim: #75715e;
-            --accent-color: #a6e22e;      
+            --accent-color: #a6e22e;
             --accent-bg: rgba(166, 226, 46, 0.15);
-            --highlight-color: #f92672;   /* Vivid Pink Highlight */
+            --highlight-bg: rgba(249, 38, 114, 0.3); /* Translucent vivid red-pink */
+            --highlight-txt: #f92672;
         }
 
         /* 3. GitHub Light Theme (Clean Professional Light Mode) */
@@ -56,23 +59,25 @@
             --text-main: #24292f;
             --text-muted: #57606a;
             --text-dim: #8c959f;
-            --accent-color: #0969da;      
+            --accent-color: #0969da;
             --accent-bg: rgba(9, 105, 218, 0.1);
-            --highlight-color: #bc4c00;   /* Deep Orange Highlight */
+            --highlight-bg: rgba(255, 211, 61, 0.4);  /* Clean highlighter yellow marker */
+            --highlight-txt: #b45309;
         }
 
-        /* 4. Minimalist Light Theme Option (Fixed Target Selector!) */
+        /* 4. Minimalist Light Theme Option */
         body[data-theme="light"] {
-            --bg-main: #f3f4f6;       
-            --bg-panel: #ffffff;      
-            --bg-darker: #e5e7eb;     
-            --border-color: #d1d5db;  
-            --text-main: #111827;     
-            --text-muted: #4b5563;    
-            --text-dim: #6b7280;      
+            --bg-main: #f3f4f6;
+            --bg-panel: #ffffff;
+            --bg-darker: #e5e7eb;
+            --border-color: #d1d5db;
+            --text-main: #111827;
+            --text-muted: #4b5563;
+            --text-dim: #6b7280;
             --accent-color: #10b981;
-            --accent-bg: rgba(16, 185, 129, 0.1); 
-            --highlight-color: #b45309;   /* Deep Amber Bronze */
+            --accent-bg: rgba(16, 185, 129, 0.1);
+            --highlight-bg: rgba(245, 158, 11, 0.25); /* Warm amber tint background marker */
+            --highlight-txt: #b45309;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -88,10 +93,23 @@
             padding: 20px;
         }
 
+        #themeSelector {
+            background: var(--bg-panel);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            outline: none;
+            margin-bottom: 24px;
+            font-family: inherit;
+        }
+
         .landing-zone { text-align: center; }
-        .landing-title { font-size: 3.25rem; font-weight: 800; color: var(--text-muted); margin-bottom: 16px; }
+        .landing-title { font-size: 3.25rem; font-weight: 800; color: var(--text-dim); margin-bottom: 16px; }
         .landing-tip { color: var(--text-dim); font-size: 1.25rem; }
-        
+
         kbd {
             background-color: var(--bg-panel);
             border: 1px solid var(--border-color);
@@ -111,15 +129,15 @@
             font-family: monospace;
             background-color: var(--bg-panel);
             border: 1px solid var(--border-color);
-            color: #fbbf24;
+            color: var(--accent-color);
         }
-        .status-success { background-color: #064e3b; border-color: #059669; color: #34d399; }
-        .status-error { background-color: #4c1d1d; border-color: #dc2626; color: #f87171; text-align: left; max-width: 500px; }
+        .status-success { background-color: var(--accent-bg); border-color: var(--accent-color); color: var(--text-main); }
+        .status-error { background-color: rgba(220, 38, 38, 0.15); border-color: #dc2626; color: #f87171; text-align: left; max-width: 500px; }
 
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(4px);
             display: flex;
             align-items: start;
@@ -146,9 +164,9 @@
             align-items: center;
             padding: 0 16px;
             border-bottom: 1px solid var(--border-color);
-            background-color: rgba(0,0,0,0.1);
+            background-color: rgba(0,0,0,0.03);
         }
-        .search-icon { font-size: 1.25rem; margin-right: 12px; }
+        .search-icon { font-size: 1.25rem; margin-right: 12px; color: var(--text-dim); }
         .search-input {
             width: 100%;
             padding: 16px 0;
@@ -159,7 +177,7 @@
             font-size: 1.3rem;
         }
         .search-input::placeholder { color: var(--text-dim); }
-        
+
         .item-counter {
             font-size: 0.85rem;
             font-family: monospace;
@@ -177,7 +195,7 @@
             padding: 8px;
         }
         .results-list::-webkit-scrollbar { width: 6px; }
-        .results-list::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 3px; }
+        .results-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
 
         .row-item {
             display: flex;
@@ -188,34 +206,37 @@
             border-left: 4px solid transparent;
             margin-bottom: 2px;
         }
-        .row-item:hover { background-color: rgba(255,255,255,0.02); }
+        .row-item:hover { background-color: rgba(0, 0, 0, 0.02); }
         .row-item.active {
             background-color: var(--accent-bg);
             border-left-color: var(--accent-color);
         }
 
-        .row-title { font-size: 1.1rem; font-weight: 500; color: #e5e7eb; }
-        .row-item.active .row-title { color: #ffffff; }
+        .row-title { font-size: 1.1rem; font-weight: 500; color: var(--text-main); }
+        .row-item.active .row-title { color: var(--text-main); }
         .row-url { font-size: 0.95rem; color: var(--text-dim); font-family: monospace; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        /* Add this anywhere inside your <style> block */
+        /* The Fix: Matches raw title line-scale identically, using a clean rounded badge marker instead of a text resize */
         .highlight-char {
-            color: var(--highlight-color);
-            font-weight: 500;
-            font-size: 1.5rem;
+            background-color: var(--highlight-bg);
+            color: var(--highlight-txt);
+            font-weight: 700;
+            padding: 1px 3px;
+            margin: 0 1px;
+            border-radius: 4px;
         }
 
         .search-footer {
             padding: 8px 16px;
             background-color: var(--bg-darker);
-            font-size: 18px;
+            font-size: 14px;
             color: var(--text-dim);
             display: flex;
             justify-content: space-between;
             border-top: 1px solid var(--border-color);
             font-family: monospace;
         }
-        .highlight-green { color: #08de1394; }
+        .highlight-green { color: var(--accent-color); }
         .highlight-red { color: #f87171; }
     </style>
 </head>
@@ -265,20 +286,20 @@
 
         function nativeFuzzyMatch(query, items) {
             if (!query) return items;
-            
+
             var cleanQuery = query.toLowerCase().replace(/\s+/g, '');
             var scoredItems = items.map(function(item) {
                 var text = item.displayName.toLowerCase();
                 var score = 0;
                 var queryIdx = 0;
-                
+
                 for (var i = 0; i < text.length && queryIdx < cleanQuery.length; i++) {
                     if (text[i] === cleanQuery[queryIdx]) {
-                        score += (10 - Math.min(i, 5)); 
+                        score += (10 - Math.min(i, 5));
                         queryIdx++;
                     }
                 }
-                
+
                 if (text.indexOf(query.toLowerCase()) !== -1) {
                     score += 50;
                 }
@@ -296,7 +317,7 @@
             try {
                 var response = await fetch('bookmarks.json?v=' + Date.now());
                 if (!response.ok) throw new Error('HTTP Error Status: ' + response.status);
-                
+
                 var text = await response.text();
                 var data;
                 try {
@@ -345,7 +366,7 @@
 
                 var itemDiv = document.createElement('div');
                 itemDiv.className = 'row-item ' + (isCurrent ? 'active' : '');
-                
+
                 var titleSpan = document.createElement('span');
                 titleSpan.className = 'row-title';
 
@@ -376,7 +397,7 @@
                 itemDiv.appendChild(titleSpan);
                 itemDiv.appendChild(urlSpan);
 
-                itemDiv.onclick = function(e) { 
+                itemDiv.onclick = function(e) {
                     var target = (e.ctrlKey || e.metaKey) ? '_blank' : '_self';
                     window.open(item.url, target);
                     input.focus();
@@ -442,7 +463,7 @@
                     var target = e.ctrlKey ? '_blank' : '_self';
                     window.open(searchResults[selectedIndex].url, target);
                 }
-                // Kept open! We just force focus back onto the input field 
+                // Kept open! We just force focus back onto the input field
                 // so you can immediately type your next query
                 input.focus();
                 renderResults();
