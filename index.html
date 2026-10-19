@@ -530,15 +530,11 @@
 
 		const themeSelector = document.getElementById('themeSelector');
 
-		// Helper function to figure out what theme to apply
-		function getAppliedTheme(savedTheme) {
-			if (savedTheme === 'default' || !savedTheme) {
-				// Check if the user's operating system prefers light mode
-				const systemPrefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-				return systemPrefersLight ? 'github-light' : 'default';
-			}
-			return savedTheme;
-		}
+		// Replace your old getAppliedTheme function with this:
+        function getAppliedTheme(savedTheme) {
+            if (!savedTheme) return 'default';
+            return savedTheme;
+        }
 
 		// Function to safely apply themes to the body tag
 		function applyTheme(themeName) {
