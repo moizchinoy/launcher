@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="icon" type="image/svg+xml" href="/hammer.svg">
+    <!-- Google Fonts Remote Loader -->
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,700;1,400&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
 			--bg-main: #0b0f19;
@@ -119,6 +123,45 @@
 			--accent-bg: rgba(250, 189, 47, 0.15);
 			--highlight-bg: rgba(254, 128, 25, 0.25);
 			--highlight-txt: #fe8019; /* Retro Orange */
+		}
+
+				/* --- FONT SWITCHER PROPERTIES --- */
+		:root {
+			--font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+			--font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+			--font-mono: monospace;
+		}
+
+		/* Inter Stack - Clean Technical Modernism */
+		body[data-font="inter"] {
+			--font-heading: 'Inter', sans-serif;
+			--font-body: 'Inter', sans-serif;
+			--font-mono: 'JetBrains Mono', monospace;
+		}
+
+		/* Editorial Stack - Elegant Classical Serifs */
+		body[data-font="editorial"] {
+			--font-heading: 'Playfair Display', Georgia, serif;
+			--font-body: 'Roboto', sans-serif;
+			--font-mono: 'Courier New', monospace;
+		}
+
+		/* Terminal Stack - Full Developer Monospace Geek */
+		body[data-font="terminal"] {
+			--font-heading: 'Fira Code', monospace;
+			--font-body: 'Fira Code', monospace;
+			--font-mono: 'Fira Code', monospace;
+		}
+
+		/* Update your existing component assignments to use these variables */
+		body {
+			font-family: var(--font-body);
+		}
+		.landing-title {
+			font-family: var(--font-heading);
+		}
+		kbd, .status-badge, .item-counter, .row-url, .search-footer {
+			font-family: var(--font-mono);
 		}
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -246,10 +289,10 @@
 
         /* The Fix: Matches raw title line-scale identically, using a clean rounded badge marker instead of a text resize */
         .highlight-char {
-            background-color: var(--highlight-bg);
+            /* background-color: var(--highlight-bg); */
             color: var(--highlight-txt);
             font-weight: 700;
-            padding: 1px 3px;
+            padding: 1px 1px;
             margin: 0 1px;
             border-radius: 4px;
         }
@@ -276,6 +319,7 @@
 			cursor: pointer;
 			outline: none;
 			transition: all 0.2s;
+			font-size: 1.1rem;
 		}
 
 		/* Optional polish: clean dropdown option styles in some browsers */
@@ -299,6 +343,13 @@
 		<option value="gruvbox">Gruvbox 🪵</option>
 	</select>
 
+	<select id="fontSelector" style="background: var(--bg-darker); color: var(--text-main); border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; outline: none; transition: all 0.2s; margin-left: 0.5rem; font-family: inherit;">
+		<option value="default">System Default 🖥️</option>
+		<option value="inter">Inter Tech ⚡</option>
+		<option value="editorial">Editorial Serif 📜</option>
+		<option value="terminal">Developer Mono 💻</option>
+	</select>
+	
     <div class="landing-zone">
         <h1 class="landing-title">Welcome</h1>
         <p class="landing-tip">Press <kbd>/</kbd> to search bookmarks</p>
@@ -552,6 +603,33 @@
             localStorage.setItem('theme', selected);
             applyTheme(selected);
         });
+
+				// --- FONT CONFIGURATION ENGINE ---
+		const fontSelector = document.getElementById('fontSelector');
+
+		function applyFont(fontName) {
+			if (fontName === 'default' || !fontName) {
+				document.body.removeAttribute('data-font');
+			} else {
+				document.body.setAttribute('data-font', fontName);
+			}
+		}
+
+		// 1. Initialise font configuration from cache on reload
+		const savedFont = localStorage.getItem('site-font') || 'default';
+		if (fontSelector) {
+			fontSelector.value = savedFont;
+		}
+		applyFont(savedFont);
+
+		// 2. Bind change listener onto font dropdown node
+		if (fontSelector) {
+			fontSelector.addEventListener('change', (e) => {
+				const selectedFont = e.target.value;
+				localStorage.setItem('site-font', selectedFont);
+				applyFont(selectedFont);
+			});
+		}
 
     </script>
 </body>
