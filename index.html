@@ -7,78 +7,119 @@
     <link rel="icon" type="image/svg+xml" href="/hammer.svg">
     <style>
         :root {
-            --bg-main: #0b0f19;       /* Deep obsidian dark background */
-            --bg-panel: #1f2937;      /* Solid slate search card */
-            --bg-darker: #111827;     /* Clean dark footer */
-            --border-color: #374151;  /* Subtle panel division border */
-            --text-main: #f9fafb;     /* High contrast white titles */
-            --text-muted: #d1d5db;    /* Soft gray category text */
-            --text-dim: #9ca3af;      /* Secondary description tags */
-            --accent-color: #10b981;   /* Smooth emerald green accent */
-            --accent-bg: rgba(16, 185, 129, 0.15);
-            --highlight-bg: rgba(251, 191, 36, 0.25); /* Translucent gold badge fill */
-            --highlight-txt: #fde047;                  /* Bright neon yellow character tint */
-        }
+			--bg-main: #0b0f19;
+			--bg-panel: #1f2937;
+			--bg-darker: #111827;
+			--border-color: #374151;
+			--text-main: #f9fafb;
+			--text-muted: #d1d5db;
+			--text-dim: #9ca3af;
+			--accent-color: #10b981;
+			--accent-bg: rgba(16, 185, 129, 0.15);
+			--highlight-bg: rgba(251, 191, 36, 0.25);
+			--highlight-txt: #fde047;
+		}
 
-        /* 1. Dracula Theme (Sleek Dark Purple) */
-        body[data-theme="dracula"] {
-            --bg-main: #282a36;
-            --bg-panel: #44475a;
-            --bg-darker: #191a21;
-            --border-color: #6272a4;
-            --text-main: #f8f8f2;
-            --text-muted: #f8f8f2;
-            --text-dim: #6272a4;
-            --accent-color: #bd93f9;
-            --accent-bg: rgba(189, 147, 249, 0.15);
-            --highlight-bg: rgba(255, 121, 198, 0.3); /* Translucent hot pink */
-            --highlight-txt: #ff79c6;
-        }
+		/* 1. Dracula Theme (Sleek Dark Purple) */
+		body[data-theme="dracula"] {
+			--bg-main: #282a36;
+			--bg-panel: #44475a;
+			--bg-darker: #191a21;
+			--border-color: #6272a4;
+			--text-main: #f8f8f2;
+			--text-muted: #a4a7c1; /* FIXED: Restored typographic hierarchy */
+			--text-dim: #6272a4;
+			--accent-color: #bd93f9;
+			--accent-bg: rgba(189, 147, 249, 0.15);
+			--highlight-bg: rgba(255, 121, 198, 0.3);
+			--highlight-txt: #ff79c6;
+		}
 
-        /* 2. Monokai Theme (Classic Retro Dev Dark) */
-        body[data-theme="monokai"] {
-            --bg-main: #272822;
-            --bg-panel: #3e3d32;
-            --bg-darker: #1e1f1c;
-            --border-color: #75715e;
-            --text-main: #f8f8f2;
-            --text-muted: #f8f8f2;
-            --text-dim: #75715e;
-            --accent-color: #a6e22e;
-            --accent-bg: rgba(166, 226, 46, 0.15);
-            --highlight-bg: rgba(249, 38, 114, 0.3); /* Translucent vivid red-pink */
-            --highlight-txt: #f92672;
-        }
+		/* 2. Monokai Theme (Classic Retro Dev Dark) */
+		body[data-theme="monokai"] {
+			--bg-main: #272822;
+			--bg-panel: #3e3d32;
+			--bg-darker: #1e1f1c;
+			--border-color: #75715e;
+			--text-main: #f8f8f2;
+			--text-muted: #cfcfca; /* FIXED: Muted down to preserve hierarchy */
+			--text-dim: #75715e;
+			--accent-color: #a6e22e;
+			--accent-bg: rgba(166, 226, 46, 0.15);
+			--highlight-bg: rgba(249, 38, 114, 0.3);
+			--highlight-txt: #f92672;
+		}
 
-        /* 3. GitHub Light Theme (Clean Professional Light Mode) */
-        body[data-theme="github-light"] {
-            --bg-main: #f6f8fa;
-            --bg-panel: #ffffff;
-            --bg-darker: #eaeef2;
-            --border-color: #d0d7de;
-            --text-main: #24292f;
-            --text-muted: #57606a;
-            --text-dim: #8c959f;
-            --accent-color: #0969da;
-            --accent-bg: rgba(9, 105, 218, 0.1);
-            --highlight-bg: rgba(255, 211, 61, 0.4);  /* Clean highlighter yellow marker */
-            --highlight-txt: #b45309;
-        }
+		/* 3. GitHub Light Theme (Clean Professional Light Mode) */
+		body[data-theme="github-light"] {
+			--bg-main: #f6f8fa;
+			--bg-panel: #ffffff;
+			--bg-darker: #eaeef2;
+			--border-color: #d0d7de;
+			--text-main: #24292f;
+			--text-muted: #57606a;
+			--text-dim: #57606a;   /* FIXED: Bumped contrast visibility for clean text titles */
+			--accent-color: #0969da;
+			--accent-bg: rgba(9, 105, 218, 0.1);
+			--highlight-bg: rgba(255, 211, 61, 0.4);
+			--highlight-txt: #b45309;
+		}
 
-        /* 4. Minimalist Light Theme Option */
-        body[data-theme="light"] {
-            --bg-main: #f3f4f6;
-            --bg-panel: #ffffff;
-            --bg-darker: #e5e7eb;
-            --border-color: #d1d5db;
-            --text-main: #111827;
-            --text-muted: #4b5563;
-            --text-dim: #6b7280;
-            --accent-color: #10b981;
-            --accent-bg: rgba(16, 185, 129, 0.1);
-            --highlight-bg: rgba(245, 158, 11, 0.25); /* Warm amber tint background marker */
-            --highlight-txt: #b45309;
-        }
+		body[data-theme="nord"] {
+			--bg-main: #2E3440;
+			--bg-panel: #3B4252;
+			--bg-darker: #242933;
+			--border-color: #4C566A;
+			--text-main: #ECEFF4;
+			--text-muted: #D8DEE9;
+			--text-dim: #4C566A;
+			--accent-color: #88C0D0; /* Frost Cyan */
+			--accent-bg: rgba(136, 192, 208, 0.15);
+			--highlight-bg: rgba(143, 188, 187, 0.25);
+			--highlight-txt: #A3BE8C; /* Soft Sage Green */
+		}
+
+		body[data-theme="tokyo-night"] {
+			--bg-main: #1a1b26;
+			--bg-panel: #24283b;
+			--bg-darker: #16161e;
+			--border-color: #414868;
+			--text-main: #c0caf5;
+			--text-muted: #a9b1d6;
+			--text-dim: #565f89;
+			--accent-color: #7aa2f7; /* Soft Neon Blue */
+			--accent-bg: rgba(122, 162, 247, 0.15);
+			--highlight-bg: rgba(247, 118, 142, 0.25);
+			--highlight-txt: #f7768e; /* Neon Coral/Pink */
+		}
+
+		body[data-theme="catppuccin"] {
+			--bg-main: #24273a;
+			--bg-panel: #363a4f;
+			--bg-darker: #1e2030;
+			--border-color: #494d64;
+			--text-main: #cad3f5;
+			--text-muted: #b8c0e0;
+			--text-dim: #6e738d;
+			--accent-color: #8bd5ca; /* Pastel Teal */
+			--accent-bg: rgba(139, 213, 202, 0.15);
+			--highlight-bg: rgba(245, 194, 231, 0.25);
+			--highlight-txt: #f5c2e7; /* Pastel Flamingo Pink */
+		}
+
+		body[data-theme="gruvbox"] {
+			--bg-main: #282828;
+			--bg-panel: #3c3836;
+			--bg-darker: #1d2021;
+			--border-color: #504945;
+			--text-main: #fbf1c7;
+			--text-muted: #d5c4a1;
+			--text-dim: #7c6f64;
+			--accent-color: #fabd2f; /* Warm Desert Yellow */
+			--accent-bg: rgba(250, 189, 47, 0.15);
+			--highlight-bg: rgba(254, 128, 25, 0.25);
+			--highlight-txt: #fe8019; /* Retro Orange */
+		}
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -91,19 +132,6 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-        }
-
-        #themeSelector {
-            background: var(--bg-panel);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            outline: none;
-            margin-bottom: 24px;
-            font-family: inherit;
         }
 
         .landing-zone { text-align: center; }
@@ -238,17 +266,38 @@
         }
         .highlight-green { color: var(--accent-color); }
         .highlight-red { color: #f87171; }
+
+        #themeSelector {
+			background: var(--bg-darker);
+			color: var(--text-main);
+			border: 1px solid var(--border-color);
+			padding: 0.5rem 1rem;
+			border-radius: 0.5rem;
+			cursor: pointer;
+			outline: none;
+			transition: all 0.2s;
+		}
+
+		/* Optional polish: clean dropdown option styles in some browsers */
+		#themeSelector option {
+			background: var(--bg-darker);
+			color: var(--text-main);
+		}
+
     </style>
 </head>
 <body>
 
-    <select id="themeSelector" style="background: var(--bg-darker); color: var(--text-main); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 1.1rem; outline: none;">
-        <option value="default">Default Dark 🌌</option>
-        <option value="light">Light ☀️</option>
-        <option value="dracula">Dracula 🧛</option>
-        <option value="monokai">Monokai 🕹️</option>
-        <option value="github-light">GitHub Light 🐙</option>
-    </select>
+	<select id="themeSelector">
+		<option value="default">Default Dark 🌌</option>
+		<option value="dracula">Dracula 🧛‍♂️</option>
+		<option value="monokai">Monokai 🌿</option>
+		<option value="github-light">GitHub Light 🐙</option>
+		<option value="nord">Nord ❄️</option>
+		<option value="tokyo-night">Tokyo Night 🌆</option>
+		<option value="catppuccin">Catppuccin ☕</option>
+		<option value="gruvbox">Gruvbox 🪵</option>
+	</select>
 
     <div class="landing-zone">
         <h1 class="landing-title">Welcome</h1>
@@ -479,29 +528,48 @@
 
         window.addEventListener('DOMContentLoaded', loadBookmarks);
 
-        const themeSelector = document.getElementById('themeSelector');
+		const themeSelector = document.getElementById('themeSelector');
 
-        // 1. Read and load the saved theme from memory on startup
-        const savedTheme = localStorage.getItem('theme') || 'default';
-        themeSelector.value = savedTheme;
-        if (savedTheme !== 'default') {
-            document.body.setAttribute('data-theme', savedTheme);
-        }
+		// Helper function to figure out what theme to apply
+		function getAppliedTheme(savedTheme) {
+			if (savedTheme === 'default' || !savedTheme) {
+				// Check if the user's operating system prefers light mode
+				const systemPrefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+				return systemPrefersLight ? 'github-light' : 'default';
+			}
+			return savedTheme;
+		}
 
-        // 2. Listen for theme alterations
-        themeSelector.onchange = function() {
-            const selectedTheme = themeSelector.value;
+		// Function to safely apply themes to the body tag
+		function applyTheme(themeName) {
+			const targetTheme = getAppliedTheme(themeName);
 
-            if (selectedTheme === 'default') {
-                document.body.removeAttribute('data-theme');
-            } else {
-                document.body.setAttribute('data-theme', selectedTheme);
-            }
+			if (targetTheme === 'default') {
+				document.body.removeAttribute('data-theme');
+			} else {
+				document.body.setAttribute('data-theme', targetTheme);
+			}
+		}
 
-            // Save state natively to memory
-            localStorage.setItem('theme', selectedTheme);
-            input.focus(); // Prevent losing text control input context
-        };
+		// 1. Initialise theme layout on page load
+		const savedTheme = localStorage.getItem('theme') || 'default';
+		themeSelector.value = savedTheme;
+		applyTheme(savedTheme);
+
+		// 2. Listen for manual dropdown selection changes
+		themeSelector.addEventListener('change', (e) => {
+			const selected = e.target.value;
+			localStorage.setItem('theme', selected);
+			applyTheme(selected);
+		});
+
+		// 3. Listen to live OS system adjustments (only triggers if select is set to "Default Dark")
+		window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => {
+			if (themeSelector.value === 'default') {
+				applyTheme('default');
+			}
+		});
+
 
     </script>
 </body>
