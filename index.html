@@ -528,44 +528,30 @@
 
         window.addEventListener('DOMContentLoaded', loadBookmarks);
 
-		const themeSelector = document.getElementById('themeSelector');
+        const themeSelector = document.getElementById('themeSelector');
 
-		// Replace your old getAppliedTheme function with this:
-        function getAppliedTheme(savedTheme) {
-            if (!savedTheme) return 'default';
-            return savedTheme;
+        // Simple function that only applies what was directly chosen
+        function applyTheme(themeName) {
+            if (themeName === 'default' || !themeName) {
+                document.body.removeAttribute('data-theme');
+            } else {
+                document.body.setAttribute('data-theme', themeName);
+            }
         }
 
-		// Function to safely apply themes to the body tag
-		function applyTheme(themeName) {
-			const targetTheme = getAppliedTheme(themeName);
+        // 1. Initialize selection setting state on reload execution
+        const savedTheme = localStorage.getItem('theme') || 'default';
+        if (themeSelector) {
+            themeSelector.value = savedTheme;
+        }
+        applyTheme(savedTheme);
 
-			if (targetTheme === 'default') {
-				document.body.removeAttribute('data-theme');
-			} else {
-				document.body.setAttribute('data-theme', targetTheme);
-			}
-		}
-
-		// 1. Initialise theme layout on page load
-		const savedTheme = localStorage.getItem('theme') || 'default';
-		themeSelector.value = savedTheme;
-		applyTheme(savedTheme);
-
-		// 2. Listen for manual dropdown selection changes
-		themeSelector.addEventListener('change', (e) => {
-			const selected = e.target.value;
-			localStorage.setItem('theme', selected);
-			applyTheme(selected);
-		});
-
-		// 3. Listen to live OS system adjustments (only triggers if select is set to "Default Dark")
-		window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => {
-			if (themeSelector.value === 'default') {
-				applyTheme('default');
-			}
-		});
-
+        // 2. Listen for manual dropdown selection changes
+        themeSelector.addEventListener('change', (e) => {
+            const selected = e.target.value;
+            localStorage.setItem('theme', selected);
+            applyTheme(selected);
+        });
 
     </script>
 </body>
