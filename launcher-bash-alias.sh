@@ -1,6 +1,3 @@
-sudo apt update
-sudo apt install fzf jq podman xdg-utils -y
-
 cat << 'EOF' >> ~/.bashrc
 
 # Interactive JSON Bookmark Selector
