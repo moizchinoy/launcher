@@ -125,7 +125,7 @@
 			--highlight-txt: #fe8019; /* Retro Orange */
 		}
 
-				/* --- FONT SWITCHER PROPERTIES --- */
+		/* --- FONT SWITCHER PROPERTIES --- */
 		:root {
 			--font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 			--font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -153,22 +153,11 @@
 			--font-mono: 'Fira Code', monospace;
 		}
 
-		/* Update your existing component assignments to use these variables */
-		body {
-			font-family: var(--font-body);
-		}
-		.landing-title {
-			font-family: var(--font-heading);
-		}
-		kbd, .status-badge, .item-counter, .row-url, .search-footer {
-			font-family: var(--font-mono);
-		}
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             background-color: var(--bg-main);
             color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: var(--font-body); /* FIXED: Swapped hardcoded fonts with the CSS variable */
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -176,6 +165,7 @@
             justify-content: center;
             padding: 20px;
         }
+
 
         .landing-zone { text-align: center; }
         .landing-title { font-size: 3.25rem; font-weight: 800; color: var(--text-dim); margin-bottom: 16px; }
@@ -328,6 +318,17 @@
 			color: var(--text-main);
 		}
 
+		/* Update your component assignments to use the variables globally */
+		body, input, select, button {
+			font-family: var(--font-body);
+		}
+		.landing-title, .row-title {
+			font-family: var(--font-heading);
+		}
+		kbd, .status-badge, .item-counter, .row-url, .search-footer, .search-input {
+			font-family: var(--font-mono);
+		}
+
     </style>
 </head>
 <body>
@@ -343,7 +344,7 @@
 		<option value="gruvbox">Gruvbox 🪵</option>
 	</select>
 
-	<select id="fontSelector" style="background: var(--bg-darker); color: var(--text-main); border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; outline: none; transition: all 0.2s; margin-left: 0.5rem; font-family: inherit;">
+	<select id="fontSelector" style="background: var(--bg-darker); color: var(--text-main); border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; outline: none; transition: all 0.2s; margin-left: 0.5rem; font-family: inherit; font-size: 1.1rem;">
 		<option value="default">System Default 🖥️</option>
 		<option value="inter">Inter Tech ⚡</option>
 		<option value="editorial">Editorial Serif 📜</option>
