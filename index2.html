@@ -393,6 +393,7 @@
 
     <script>
         let flatBookmarks = [];
+        let haystack = [];
         let searchResults = []; // Stores filtered bookmark objects
         let currentUfInfo = null; // Stores uFuzzy match metadata for highlighting
         let selectedIndex = -1;
@@ -433,7 +434,9 @@
                         });
                     }
                 });
-
+				
+				haystack = flatBookmarks.map(function(b) { return b.displayName; });
+				
                 searchResults = flatBookmarks.slice();
                 currentUfInfo = null;
                 renderResults();
@@ -507,7 +510,7 @@
         		searchResults = flatBookmarks.slice();
         		currentUfInfo = null;
     		} else {
-        		var haystack = flatBookmarks.map(function(b) { return b.displayName; });
+        		// var haystack = flatBookmarks.map(function(b) { return b.displayName; });
         		
 				const [idxs, info, order] = uf.search(haystack, query, 3)
 
