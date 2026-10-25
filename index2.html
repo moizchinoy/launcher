@@ -509,7 +509,7 @@
     		} else {
         		var haystack = flatBookmarks.map(function(b) { return b.displayName; });
         		
-				const [idxs, info, order] = uf.search(haystack, query, 3)
+				const [idxs, info, order] = uf.search(haystack, query, 3, 3)
 
 				// console.log('idxs: ' + idxs)
 				// console.log('info: ' + info)
@@ -532,9 +532,14 @@
 								rangesArr.push(info.ranges[i]); // Dynamically maps valid character blocks
 							}
 						}
+						currentUfInfo = { ranges: rangesArr }; // Expose ranges object
+					} else {
+						// Gracefully render pre-filtered but unordered matches without highlights
+						for (var i = 0; i < idxs.length; i++) {
+							searchResults.push(flatBookmarks[idxs[i]]);
+						}
+						currentUfInfo = null;
             		}
-            		
-            		currentUfInfo = { ranges: rangesArr }; // Expose ranges object
         		} else {
             		searchResults = [];
             		currentUfInfo = null;
