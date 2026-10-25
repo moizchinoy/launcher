@@ -509,7 +509,7 @@
     		} else {
         		var haystack = flatBookmarks.map(function(b) { return b.displayName; });
         		
-				const [idxs, info, order] = uf.search(haystack, query, 3, 3)
+				const [idxs, info, order] = uf.search(haystack, query, 3)
 
 				// console.log('idxs: ' + idxs)
 				// console.log('info: ' + info)
