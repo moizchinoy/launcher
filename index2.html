@@ -519,18 +519,11 @@
             		searchResults = [];
             		var rangesArr = []; // Clear array for range indices
             		
-					if (info && order) {
-						if (order.length > 0) {
-							for (var i = 0; i < order.length; i++) {
-								var infoIdx = order[i];
-								searchResults.push(flatBookmarks[info.idx[infoIdx]]);
-								rangesArr.push(info.ranges[infoIdx]); // Store match ranges
-							}
-						} else {
-							for (var i = 0; i < idxs.length; i++) {
-								searchResults.push(flatBookmarks[idxs[i]]);
-								rangesArr.push(info.ranges[i]); // Dynamically maps valid character blocks
-							}
+					if (info && order && order.length > 0) {
+						for (var i = 0; i < order.length; i++) {
+							var infoIdx = order[i];
+							searchResults.push(flatBookmarks[info.idx[infoIdx]]);
+							rangesArr.push(info.ranges[infoIdx]); // Store match ranges
 						}
 						currentUfInfo = { ranges: rangesArr }; // Expose ranges object
 					} else {
