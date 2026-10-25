@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="/hammer.svg">
+    <!-- Google Fonts Remote Loader -->
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,700;1,400&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <!-- uFuzzy Library Script (IIFE Build for Vanilla JS Browser Environments) -->
+    <script src="https://unpkg.com/@leeoniya/ufuzzy/dist/uFuzzy.iife.min.js"></script>
+    <style>
+        :root {
+			--bg-main: #0b0f19;
+			--bg-panel: #1f2937;
+			--bg-darker: #111827;
+			--border-color: #374151;
+			--text-main: #f9fafb;
+			--text-muted: #d1d5db;
+			--text-dim: #9ca3af;
+			--accent-color: #10b981;
+			--accent-bg: rgba(16, 185, 129, 0.15);
+			--highlight-bg: rgba(251, 191, 36, 0.25);
+			--highlight-txt: #fde047;
+		}
+
+		/* 1. Dracula Theme (Sleek Dark Purple) */
+		body[data-theme="dracula"] {
+			--bg-main: #282a36;
+			--bg-panel: #44475a;
+			--bg-darker: #191a21;
+			--border-color: #6272a4;
+			--text-main: #f8f8f2;
+			--text-muted: #a4a7c1; /* FIXED: Restored typographic hierarchy */
+			--text-dim: #6272a4;
+			--accent-color: #bd93f9;
+			--accent-bg: rgba(189, 147, 249, 0.15);
+			--highlight-bg: rgba(255, 121, 198, 0.3);
+			--highlight-txt: #ff79c6;
+		}
+
+		/* 2. Monokai Theme (Classic Retro Dev Dark) */
+		body[data-theme="monokai"] {
+			--bg-main: #272822;
+			--bg-panel: #3e3d32;
+			--bg-darker: #1e1f1c;
+			--border-color: #75715e;
+			--text-main: #f8f8f2;
+			--text-muted: #cfcfca; /* FIXED: Muted down to preserve hierarchy */
+			--text-dim: #75715e;
+			--accent-color: #a6e22e;
+			--accent-bg: rgba(166, 226, 46, 0.15);
+			--highlight-bg: rgba(249, 38, 114, 0.3);
+			--highlight-txt: #f92672;
+		}
+
+		/* 3. GitHub Light Theme (Clean Professional Light Mode) */
+		body[data-theme="github-light"] {
+			--bg-main: #f6f8fa;
+			--bg-panel: #ffffff;
+			--bg-darker: #eaeef2;
+			--border-color: #d0d7de;
+			--text-main: #24292f;
+			--text-muted: #57606a;
+			--text-dim: #57606a;   /* FIXED: Bumped contrast visibility for clean text titles */
+			--accent-color: #0969da;
+			--accent-bg: rgba(9, 105, 218, 0.1);
+			--highlight-bg: rgba(255, 211, 61, 0.4);
+			--highlight-txt: #b45309;
+		}
+
+		body[data-theme="nord"] {
+			--bg-main: #2E3440;
+			--bg-panel: #3B4252;
+			--bg-darker: #242933;
+			--border-color: #4C566A;
+			--text-main: #ECEFF4;
+			--text-muted: #D8DEE9;
+			--text-dim: #4C566A;
+			--accent-color: #88C0D0; /* Frost Cyan */
+			--accent-bg: rgba(136, 192, 208, 0.15);
+			--highlight-bg: rgba(143, 188, 187, 0.25);
+			--highlight-txt: #A3BE8C; /* Soft Sage Green */
+		}
+
+		body[data-theme="tokyo-night"] {
+			--bg-main: #1a1b26;
+			--bg-panel: #24283b;
+			--bg-darker: #16161e;
+			--border-color: #414868;
+			--text-main: #c0caf5;
+			--text-muted: #a9b1d6;
+			--text-dim: #565f89;
+			--accent-color: #7aa2f7; /* Soft Neon Blue */
+			--accent-bg: rgba(122, 162, 247, 0.15);
+			--highlight-bg: rgba(247, 118, 142, 0.25);
+			--highlight-txt: #f7768e; /* Neon Coral/Pink */
+		}
+
+		body[data-theme="catppuccin"] {
+			--bg-main: #24273a;
+			--bg-panel: #363a4f;
+			--bg-darker: #1e2030;
+			--border-color: #494d64;
+			--text-main: #cad3f5;
+			--text-muted: #b8c0e0;
+			--text-dim: #6e738d;
+			--accent-color: #8bd5ca; /* Pastel Teal */
+			--accent-bg: rgba(139, 213, 202, 0.15);
+			--highlight-bg: rgba(245, 194, 231, 0.25);
+			--highlight-txt: #f5c2e7; /* Pastel Flamingo Pink */
+		}
+
+		body[data-theme="gruvbox"] {
+			--bg-main: #282828;
+			--bg-panel: #3c3836;
+			--bg-darker: #1d2021;
+			--border-color: #504945;
+			--text-main: #fbf1c7;
+			--text-muted: #d5c4a1;
+			--text-dim: #7c6f64;
+			--accent-color: #fabd2f; /* Warm Desert Yellow */
+			--accent-bg: rgba(250, 189, 47, 0.15);
+			--highlight-bg: rgba(254, 128, 25, 0.25);
+			--highlight-txt: #fe8019; /* Retro Orange */
+		}
+
+		/* --- FONT SWITCHER PROPERTIES --- */
+		:root {
+			--font-heading: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+			--font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+			--font-mono: monospace;
+		}
+
+		/* Inter Stack - Clean Technical Modernism */
+		body[data-font="inter"] {
+			--font-heading: 'Inter', sans-serif;
+			--font-body: 'Inter', sans-serif;
+			--font-mono: 'JetBrains Mono', monospace;
+		}
+
+		/* Editorial Stack - Elegant Classical Serifs */
+		body[data-font="editorial"] {
+			--font-heading: 'Playfair Display', Georgia, serif;
+			--font-body: 'Roboto', sans-serif;
+			--font-mono: 'Courier New', monospace;
+		}
+
+		/* Terminal Stack - Full Developer Monospace Geek */
+		body[data-font="terminal"] {
+			--font-heading: 'Fira Code', monospace;
+			--font-body: 'Fira Code', monospace;
+			--font-mono: 'Fira Code', monospace;
+		}
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: var(--font-body); /* FIXED: Swapped hardcoded fonts with the CSS variable */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+
+        .landing-zone { text-align: center; }
+        .landing-title { font-size: 3.25rem; font-weight: 800; color: var(--text-dim); margin-bottom: 16px; }
+        .landing-tip { color: var(--text-dim); font-size: 1.25rem; }
+
+        kbd {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: monospace;
+            font-size: 1.0rem;
+            color: var(--text-main);
+        }
+
+        .status-badge {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 1.0rem;
+            font-family: monospace;
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            color: var(--accent-color);
+        }
+        .status-success { background-color: var(--accent-bg); border-color: var(--accent-color); color: var(--text-main); }
+        .status-error { background-color: rgba(220, 38, 38, 0.15); border-color: #dc2626; color: #f87171; text-align: left; max-width: 500px; }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: start;
+            justify-content: center;
+            padding-top: 15vh;
+            z-index: 50;
+        }
+        .hidden { display: none !important; }
+
+        .search-panel {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 650px;
+            border-radius: 12px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .search-header {
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: rgba(0,0,0,0.03);
+        }
+        .search-icon { font-size: 1.25rem; margin-right: 12px; color: var(--text-dim); }
+        .search-input {
+            width: 100%;
+            padding: 16px 0;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-main);
+            font-size: 1.3rem;
+        }
+        .search-input::placeholder { color: var(--text-dim); }
+
+        .item-counter {
+            font-size: 0.85rem;
+            font-family: monospace;
+            color: var(--text-dim);
+            background-color: var(--bg-darker);
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-left: 8px;
+            white-space: nowrap;
+        }
+
+        .results-list {
+            max-height: 350px;
+            overflow-y: auto;
+            padding: 8px;
+        }
+        .results-list::-webkit-scrollbar { width: 6px; }
+        .results-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+
+        .row-item {
+            display: flex;
+            flex-direction: column;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+            margin-bottom: 2px;
+        }
+        .row-item:hover { background-color: rgba(0, 0, 0, 0.02); }
+        .row-item.active {
+            background-color: var(--accent-bg);
+            border-left-color: var(--accent-color);
+        }
+
+        .row-title { font-size: 1.1rem; font-weight: 500; color: var(--text-main); }
+        .row-item.active .row-title { color: var(--text-main); }
+        .row-url { font-size: 0.95rem; color: var(--text-dim); font-family: monospace; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        /* The Fix: Matches raw title line-scale identically, using a clean rounded badge marker instead of a text resize */
+        .highlight-char {
+            /* background-color: var(--highlight-bg); */
+            color: var(--highlight-txt);
+            font-weight: 700;
+            padding: 1px 1px;
+            margin: 0 1px;
+            border-radius: 4px;
+        }
+
+        .search-footer {
+            padding: 8px 16px;
+            background-color: var(--bg-darker);
+            font-size: 14px;
+            color: var(--text-dim);
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid var(--border-color);
+            font-family: monospace;
+        }
+        .highlight-green { color: var(--accent-color); }
+        .highlight-red { color: #f87171; }
+
+        /* Locks the switcher wrapper to the top right of the screen */
+        #controlsContainer {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px; /* Forces them side-by-side with a clean gap */
+            z-index: 100; /* Ensures it sits on top of modals if needed */
+        }
+
+        /* Standardized style rule applied to BOTH dropdowns uniformly */
+        #themeSelector, #fontSelector {
+            background: var(--bg-darker);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s;
+            font-size: 1.1rem;
+        }
+
+        /* Clean dropdown options styling fallback */
+        #themeSelector option, #fontSelector option {
+            background: var(--bg-darker);
+            color: var(--text-main);
+        }
+
+		/* Update your component assignments to use the variables globally */
+		/* Update your component assignments to use the variables globally */
+		body, input, select, button {
+			font-family: var(--font-body);
+		}
+		.landing-title, .row-title {
+			font-family: var(--font-heading);
+		}
+		kbd, .status-badge, .item-counter, .row-url, .search-footer, .search-input {
+			font-family: var(--font-mono);
+		}
+
+
+    </style>
+</head>
+<body>
+
+	<div id="controlsContainer">
+		<select id="themeSelector">
+			<option value="default">Default Dark 🌌</option>
+			<option value="dracula">Dracula 🧛‍♂️</option>
+			<option value="monokai">Monokai 🌿</option>
+			<option value="github-light">GitHub Light 🐙</option>
+			<option value="nord">Nord ❄️</option>
+			<option value="tokyo-night">Tokyo Night 🌆</option>
+			<option value="catppuccin">Catppuccin ☕</option>
+			<option value="gruvbox">Gruvbox 🪵</option>
+		</select>
+	
+		<select id="fontSelector">
+			<option value="default" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">System Default 🖥️</option>
+			<option value="inter" style="font-family: 'Inter', sans-serif;">Inter Tech ⚡</option>
+			<option value="editorial" style="font-family: 'Roboto', sans-serif;">Editorial Serif 📜</option>
+			<option value="terminal" style="font-family: 'Fira Code', monospace;">Developer Mono 💻</option>
+		</select>
+	</div>
+	
+    <div class="landing-zone">
+        <h1 class="landing-title">Welcome</h1>
+        <p class="landing-tip">Press <kbd>/</kbd> to search bookmarks</p>
+        <div id="statusMessage" class="status-badge">
+            🔄 Loading bookmarks from Python server...
+        </div>
+    </div>
+
+    <div id="searchModal" class="modal-overlay hidden">
+        <div class="search-panel">
+            <div class="search-header">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Search bookmarks..." class="search-input" autocomplete="off">
+                <span id="itemCounter" class="item-counter">0/0</span>
+            </div>
+            <div id="resultsList" class="results-list"></div>
+            <div class="search-footer">
+                <div><span class="highlight-green">↑↓</span> Navigate • <span class="highlight-green">Enter</span> Open • <span class="highlight-green">Ctrl/Cmd+Enter</span> New Tab</div>
+                <div><span class="highlight-red">ESC</span> Close</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let flatBookmarks = [];
+        let searchResults = []; // Stores filtered bookmark objects
+        let currentUfInfo = null; // Stores uFuzzy match metadata for highlighting
+        let selectedIndex = -1;
+
+        const modal = document.getElementById('searchModal');
+        const input = document.getElementById('searchInput');
+        const list = document.getElementById('resultsList');
+        const counter = document.getElementById('itemCounter');
+        const statusMessage = document.getElementById('statusMessage');
+
+        // Initialize uFuzzy instance globally
+        const uf = new uFuzzy({
+    		intraMode: 1,      // Allows 1 typo substitution per term
+    		intraIns: 1,       // Allows 1 character insertion error
+    		outOfOrder: 2,     // Crucial: Allows out-of-order terms separated by spaces
+    		boundChars: " -/", // Treats hyphens and slashes as boundaries for clean tokenizing
+		});
+
+        async function loadBookmarks() {
+            try {
+                var response = await fetch('bookmarks.json?v=' + Date.now());
+                if (!response.ok) throw new Error('HTTP Error Status: ' + response.status);
+
+                var text = await response.text();
+                var data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    throw new Error('JSON structural parse crash: ' + e.message);
+                }
+
+                flatBookmarks = [];
+                data.forEach(function(group) {
+                    var category = group.category || '';
+                    if (group.links && Array.isArray(group.links)) {
+                        group.links.forEach(function(link) {
+                            var displayName = category.length > 0 ? (category + ' - ' + link.name) : link.name;
+                            flatBookmarks.push({ displayName: displayName, url: link.url });
+                        });
+                    }
+                });
+
+                searchResults = flatBookmarks.slice();
+                currentUfInfo = null;
+                renderResults();
+
+                statusMessage.className = "status-badge status-success";
+                statusMessage.innerHTML = "✅ Loaded <b>" + flatBookmarks.length + "</b> local bookmarks natively!";
+            } catch (err) {
+                statusMessage.className = "status-badge status-error";
+                statusMessage.innerHTML = "❌ <b>Error:</b> " + err.message;
+                console.error(err);
+            }
+        }
+
+		function renderResults() {
+    		if (searchResults.length === 0) {
+        		list.innerHTML = '<div style="padding:16px;color:#6b7280;text-align:center;font-size:14px;">No matches found</div>';
+        		counter.textContent = '0/' + flatBookmarks.length;
+        		return;
+    		}
+		
+    		counter.textContent = searchResults.length + '/' + flatBookmarks.length;
+    		list.innerHTML = '';
+		
+    		searchResults.forEach(function(item, index) {
+        		var isCurrent = selectedIndex >= 0 && index === selectedIndex;
+		
+        		var itemDiv = document.createElement('div');
+        		itemDiv.className = 'row-item ' + (isCurrent ? 'active' : '');
+		
+        		var titleSpan = document.createElement('span');
+        		titleSpan.className = 'row-title';
+		
+  				// --- UFUZZY HIGH-PERFORMANCE HIGHLIGHTING ENGINE ---
+				if (currentUfInfo && currentUfInfo.ranges && currentUfInfo.ranges[index]) {
+    				var text = item.displayName;
+    				var ranges = currentUfInfo.ranges[index];
+    				
+    				// uFuzzy.highlight takes: (text, ranges, custom_wrapping_callback)
+    				titleSpan.innerHTML = uFuzzy.highlight(text, ranges, function(part, matched) {
+        				return matched ? '<span class="highlight-char">' + part + '</span>' : part;
+    				});
+				} else {
+    				// Fallback for empty search inputs or when no match ranges exist
+    				titleSpan.textContent = item.displayName;
+				}
+				// ----------------------------------------------------
+						
+        		var urlSpan = document.createElement('span');
+        		urlSpan.className = 'row-url';
+        		urlSpan.textContent = '🔗 ' + item.url;
+		
+        		itemDiv.appendChild(titleSpan);
+        		itemDiv.appendChild(urlSpan);
+		
+        		itemDiv.onclick = function(e) {
+            		var target = (e.ctrlKey || e.metaKey) ? '_blank' : '_self';
+            		window.open(item.url, target);
+            		input.focus();
+        		};
+        		list.appendChild(itemDiv);
+    		});
+		
+    		var activeEl = list.children[selectedIndex];
+    		if (activeEl) activeEl.scrollIntoView({ block: 'nearest' });
+		}
+		
+
+        input.oninput = function() {
+    		var query = input.value.trim();
+    		if (!query) {
+        		searchResults = flatBookmarks.slice();
+        		currentUfInfo = null;
+    		} else {
+        		var haystack = flatBookmarks.map(function(b) { return b.displayName; });
+        		var idxs = uf.filter(haystack, query);
+        		
+        		if (idxs && idxs.length > 0) {
+            		var info = uf.search(haystack, query, idxs);
+            		
+            		searchResults = [];
+            		var rangesArr = []; // Clear array for range indices
+            		
+            		if (info && info.order && info.order.length > 0) {
+                		var order = info.order;
+                		for (var i = 0; i < order.length; i++) {
+                    		var orderIdx = order[i];
+                    		var originalIdx = idxs[orderIdx];
+                    		searchResults.push(flatBookmarks[originalIdx]);
+                    		rangesArr.push(info.ranges[orderIdx]); // Store match ranges
+                		}
+            		} else {
+                		// Fallback direct loop if best-match sorting isn't generated
+                		for (var i = 0; i < idxs.length; i++) {
+                    		searchResults.push(flatBookmarks[idxs[i]]);
+                    		rangesArr.push(null); 
+                		}
+            		}
+            		
+            		currentUfInfo = { ranges: rangesArr }; // Expose ranges object
+        		} else {
+            		searchResults = [];
+            		currentUfInfo = null;
+        		}
+    		}
+    		selectedIndex = -1;
+    		renderResults();
+		};
+
+
+        window.onkeydown = function(e) {
+            if (e.key === '/' && modal.classList.contains('hidden')) {
+                e.preventDefault();
+                modal.classList.remove('hidden');
+                input.focus();
+                input.value = '';
+                searchResults = flatBookmarks.slice();
+                currentUfInfo = null;
+                selectedIndex = -1;
+                renderResults();
+                return;
+            }
+
+            if (modal.classList.contains('hidden')) return;
+
+            if (e.key === 'Escape') {
+                modal.classList.add('hidden');
+                input.blur();
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (searchResults.length > 0) {
+                    if (selectedIndex === searchResults.length - 1) {
+                        selectedIndex = -1;
+                    } else {
+                        selectedIndex++;
+                    }
+                    renderResults();
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (searchResults.length > 0) {
+                    if (selectedIndex === 0) {
+                        selectedIndex = -1;
+                    } else if (selectedIndex === -1) {
+                        selectedIndex = searchResults.length - 1;
+                    } else {
+                        selectedIndex--;
+                    }
+                    renderResults();
+                }
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (selectedIndex >= 0 && searchResults[selectedIndex]) {
+                    var target = e.ctrlKey ? '_blank' : '_self';
+                    window.open(searchResults[selectedIndex].url, target);
+                }
+                input.focus();
+                renderResults();
+            }
+        };
+
+        window.onclick = function(e) {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+                input.blur();
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', loadBookmarks);
+
+        const themeSelector = document.getElementById('themeSelector');
+
+        function applyTheme(themeName) {
+            if (themeName === 'default' || !themeName) {
+                document.body.removeAttribute('data-theme');
+            } else {
+                document.body.setAttribute('data-theme', themeName);
+            }
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 'default';
+        if (themeSelector) {
+            themeSelector.value = savedTheme;
+        }
+        applyTheme(savedTheme);
+
+        themeSelector.addEventListener('change', (e) => {
+            const selected = e.target.value;
+            localStorage.setItem('theme', selected);
+            applyTheme(selected);
+        });
+
+		const fontSelector = document.getElementById('fontSelector');
+
+		function applyFont(fontName) {
+			if (fontName === 'default' || !fontName) {
+				document.body.removeAttribute('data-font');
+			} else {
+				document.body.setAttribute('data-font', fontName);
+			}
+		}
+
+		const savedFont = localStorage.getItem('site-font') || 'default';
+		if (fontSelector) {
+			fontSelector.value = savedFont;
+		}
+		applyFont(savedFont);
+
+		if (fontSelector) {
+			fontSelector.addEventListener('change', (e) => {
+				const selectedFont = e.target.value;
+				localStorage.setItem('site-font', selectedFont);
+				applyFont(selectedFont);
+			});
+		}
+
+    </script>
+</body>
+</html>
