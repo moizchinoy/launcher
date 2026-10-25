@@ -508,29 +508,29 @@
         		currentUfInfo = null;
     		} else {
         		var haystack = flatBookmarks.map(function(b) { return b.displayName; });
-        		var idxs = uf.filter(haystack, query);
         		
-        		if (idxs && idxs.length > 0) {
-            		var info = uf.search(haystack, query, idxs);
-            		
+        		const [idxs, info, order] = uf.search(haystack, query, outOfOrder=2)
+
+				// console.log('idxs: ' + idxs)
+				// console.log('info: ' + info)
+				// console.log('order: ' + order)
+        		
+        		if (idxs && idxs.length > 0) {	
             		searchResults = [];
             		var rangesArr = []; // Clear array for range indices
             		
-            		if (info && info.order && info.order.length > 0) {
-                		var order = info.order;
-                		for (var i = 0; i < order.length; i++) {
-                    		var orderIdx = order[i];
-                    		var originalIdx = idxs[orderIdx];
-                    		searchResults.push(flatBookmarks[originalIdx]);
-                    		rangesArr.push(info.ranges[orderIdx]); // Store match ranges
-                		}
-            		} else {
-						// FALLBACK: If order calculation is skipped but idxs contains matches,
-						// we generate a quick sub-info slice so your visual highlights never turn off!
-						var infoFallback = uf.info(idxs, haystack, query);
-						for (var i = 0; i < idxs.length; i++) {
-							searchResults.push(flatBookmarks[idxs[i]]);
-							rangesArr.push(infoFallback.ranges[i]); // Dynamically maps valid character blocks
+					if (info && order) {
+						if (order.length > 0) {
+							for (var i = 0; i < order.length; i++) {
+								var infoIdx = order[i];
+								searchResults.push(flatBookmarks[info.idx[infoIdx]]);
+								rangesArr.push(info.ranges[infoIdx]); // Store match ranges
+							}
+						} else {
+							for (var i = 0; i < idxs.length; i++) {
+								searchResults.push(flatBookmarks[idxs[i]]);
+								rangesArr.push(info.ranges[i]); // Dynamically maps valid character blocks
+							}
 						}
             		}
             		
