@@ -404,12 +404,11 @@
         const statusMessage = document.getElementById('statusMessage');
 
         // Initialize uFuzzy instance globally
-        const uf = new uFuzzy({
-    		intraMode: 1,      // Allows 1 typo substitution per term
-    		intraIns: 1,       // Allows 1 character insertion error
-    		outOfOrder: 2,     // Crucial: Allows out-of-order terms separated by spaces
-    		boundChars: " -/", // Treats hyphens and slashes as boundaries for clean tokenizing
-		});
+        // Global uFuzzy Configuration optimized for rapid launcher shortcuts (like 'gl' for 'Gmail')
+		const uf = new uFuzzy({
+			intraMode: 0,         // Allows typo substitutions
+			intraIns: 10,          // CRUCIAL: Allows up to 5 skipped characters inside a word (e.g., G[mai]l)
+        });
 
         async function loadBookmarks() {
             try {
@@ -474,8 +473,8 @@
     				
     				// uFuzzy.highlight takes: (text, ranges, custom_wrapping_callback)
     				titleSpan.innerHTML = uFuzzy.highlight(text, ranges, function(part, matched) {
-        				return matched ? '<span class="highlight-char">' + part + '</span>' : part;
-    				});
+						return matched ? '<span class="highlight-char">' + part + '</span>' : part;
+					});
 				} else {
     				// Fallback for empty search inputs or when no match ranges exist
     				titleSpan.textContent = item.displayName;
@@ -526,11 +525,13 @@
                     		rangesArr.push(info.ranges[orderIdx]); // Store match ranges
                 		}
             		} else {
-                		// Fallback direct loop if best-match sorting isn't generated
-                		for (var i = 0; i < idxs.length; i++) {
-                    		searchResults.push(flatBookmarks[idxs[i]]);
-                    		rangesArr.push(null); 
-                		}
+						// FALLBACK: If order calculation is skipped but idxs contains matches,
+						// we generate a quick sub-info slice so your visual highlights never turn off!
+						var infoFallback = uf.info(idxs, haystack, query);
+						for (var i = 0; i < idxs.length; i++) {
+							searchResults.push(flatBookmarks[idxs[i]]);
+							rangesArr.push(infoFallback.ranges[i]); // Dynamically maps valid character blocks
+						}
             		}
             		
             		currentUfInfo = { ranges: rangesArr }; // Expose ranges object
