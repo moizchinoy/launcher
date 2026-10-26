@@ -331,6 +331,26 @@
             color: var(--text-main);
         }
 
+        .slider-control {
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-darker);
+            border: 1px solid var(--border-color);
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            min-width: 160px;
+        }
+        .slider-control label {
+            color: var(--text-dim);
+            margin-bottom: 2px;
+        }
+        .slider-control input[type="range"] {
+            cursor: pointer;
+            accent-color: var(--accent-color);
+        }
+
 		/* Update your component assignments to use the variables globally */
 		/* Update your component assignments to use the variables globally */
 		body, input, select, button {
@@ -366,6 +386,17 @@
 			<option value="editorial" style="font-family: 'Roboto', sans-serif;">Editorial Serif 📜</option>
 			<option value="terminal" style="font-family: 'Fira Code', monospace;">Developer Mono 💻</option>
 		</select>
+
+        <!-- Insert this inside your existing #controlsContainer div -->
+        <div class="slider-control">
+            <label for="outOfOrderSlider">Out-Of-Order Limit: <span id="outOfOrderValue">15</span></label>
+            <input type="range" id="outOfOrderSlider" min="0" max="50" value="15">
+        </div>
+        <div class="slider-control">
+            <label for="intraInsSlider">Intra Insertion Limit: <span id="intraInsValue">10</span></label>
+            <input type="range" id="intraInsSlider" min="0" max="20" value="10">
+        </div>
+
 	</div>
 	
     <div class="landing-zone">
@@ -404,15 +435,63 @@
         const counter = document.getElementById('itemCounter');
         const statusMessage = document.getElementById('statusMessage');
 
-        const outOfOrder = 15;
-        const intraIns = 10;
+        // 1. Core configurations state loaded from localStorage or falling back to defaults
+        let outOfOrder = parseInt(localStorage.getItem('uf-outOfOrder')) || 15;
+        let intraIns = parseInt(localStorage.getItem('uf-intraIns')) || 10;
+
+        // 2. Global uFuzzy reference placeholder
+        let uf;
+
+        function initUFuzzy() {
+            uf = new uFuzzy({
+                intraMode: 0,
+                intraIns: intraIns,
+            });
+        }
+        initUFuzzy(); // Initialize instance on start
+
+        // 3. UI Syncing and Interaction handling logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const oooSlider = document.getElementById('outOfOrderSlider');
+            const oooVal = document.getElementById('outOfOrderValue');
+            const iiSlider = document.getElementById('intraInsSlider');
+            const iiVal = document.getElementById('intraInsValue');
+
+            // Populate positions
+            oooSlider.value = outOfOrder;
+            oooVal.textContent = outOfOrder;
+            iiSlider.value = intraIns;
+            iiVal.textContent = intraIns;
+
+            // React to Out of Order change
+            oooSlider.addEventListener('input', (e) => {
+                outOfOrder = parseInt(e.target.value);
+                oooVal.textContent = outOfOrder;
+                localStorage.setItem('uf-outOfOrder', outOfOrder);
+                // Trigger a fresh filter pass on the active query string if one exists
+                if(input.value.trim()) input.oninput(); 
+            });
+
+            // React to Intra Insertion change
+            iiSlider.addEventListener('input', (e) => {
+                intraIns = parseInt(e.target.value);
+                iiVal.textContent = intraIns;
+                localStorage.setItem('uf-intraIns', intraIns);
+                initUFuzzy(); // uFuzzy needs re-instantiation to catch configuration value mutations
+                if(input.value.trim()) input.oninput();
+            });
+        });
+
+
+        // const outOfOrder = 15;
+        // const intraIns = 10;
 
         // Initialize uFuzzy instance globally
         // Global uFuzzy Configuration optimized for rapid launcher shortcuts (like 'gl' for 'Gmail')
-		const uf = new uFuzzy({
-			intraMode: 0,         // Allows typo substitutions
-			intraIns: intraIns,   // CRUCIAL: Allows up to 5 skipped characters inside a word (e.g., G[mai]l)
-        });
+		// const uf = new uFuzzy({
+		// 	intraMode: 0,         // Allows typo substitutions
+		// 	intraIns: intraIns,   // CRUCIAL: Allows up to 5 skipped characters inside a word (e.g., G[mai]l)
+        // });
 
         async function loadBookmarks() {
             try {
