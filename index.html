@@ -451,7 +451,8 @@
         initUFuzzy(); // Initialize instance on start
 
         // 3. UI Syncing and Interaction handling logic
-        document.addEventListener('DOMContentLoaded', () => {
+        // document.addEventListener('DOMContentLoaded', () => {
+        function setupUIControls() {
             const oooSlider = document.getElementById('outOfOrderSlider');
             const oooVal = document.getElementById('outOfOrderValue');
             const iiSlider = document.getElementById('intraInsSlider');
@@ -480,8 +481,8 @@
                 initUFuzzy(); // uFuzzy needs re-instantiation to catch configuration value mutations
                 if(input.value.trim()) input.oninput();
             });
-        });
-
+        }
+    //);
 
         // const outOfOrder = 15;
         // const intraIns = 10;
@@ -684,7 +685,7 @@
             }
         };
 
-        window.addEventListener('DOMContentLoaded', loadBookmarks);
+        // window.addEventListener('DOMContentLoaded', loadBookmarks);
 
         const themeSelector = document.getElementById('themeSelector');
 
@@ -731,6 +732,20 @@
 				applyFont(selectedFont);
 			});
 		}
+
+        // At the bottom of your script, declare a unified startup block
+        async function initApp() {
+            // 1. Instantiation
+            initUFuzzy();
+            
+            // 2. Setup your slider positions and theme/font selectors
+            setupUIControls(); 
+            
+            // 3. Fetch data safely over the network
+            await loadBookmarks();
+        }
+
+        window.addEventListener('DOMContentLoaded', initApp);
 
     </script>
 </body>
