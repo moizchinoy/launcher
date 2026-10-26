@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://googleapis.com">
     <link rel="preconnect" href="https://gstatic.com" crossorigin>
     <link href="https://googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,700;1,400&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <!-- uFuzzy Library Script (IIFE Build for Vanilla JS Browser Environments) -->
+    <script src="https://unpkg.com/@leeoniya/ufuzzy/dist/uFuzzy.iife.min.js"></script>
     <style>
         :root {
 			--bg-main: #0b0f19;
@@ -391,7 +393,9 @@
 
     <script>
         let flatBookmarks = [];
-        let searchResults = [];
+        let haystack = [];
+        let searchResults = []; // Stores filtered bookmark objects
+        let currentUfInfo = null; // Stores uFuzzy match metadata for highlighting
         let selectedIndex = -1;
 
         const modal = document.getElementById('searchModal');
@@ -400,34 +404,12 @@
         const counter = document.getElementById('itemCounter');
         const statusMessage = document.getElementById('statusMessage');
 
-        function nativeFuzzyMatch(query, items) {
-            if (!query) return items;
-
-            var cleanQuery = query.toLowerCase().replace(/\s+/g, '');
-            var scoredItems = items.map(function(item) {
-                var text = item.displayName.toLowerCase();
-                var score = 0;
-                var queryIdx = 0;
-
-                for (var i = 0; i < text.length && queryIdx < cleanQuery.length; i++) {
-                    if (text[i] === cleanQuery[queryIdx]) {
-                        score += (10 - Math.min(i, 5));
-                        queryIdx++;
-                    }
-                }
-
-                if (text.indexOf(query.toLowerCase()) !== -1) {
-                    score += 50;
-                }
-
-                return { item: item, matches: queryIdx === cleanQuery.length, score: score };
-            });
-
-            return scoredItems
-                .filter(function(res) { return res.matches; })
-                .sort(function(a, b) { return b.score - a.score; })
-                .map(function(res) { return res.item; });
-        }
+        // Initialize uFuzzy instance globally
+        // Global uFuzzy Configuration optimized for rapid launcher shortcuts (like 'gl' for 'Gmail')
+		const uf = new uFuzzy({
+			intraMode: 0,         // Allows typo substitutions
+			intraIns: 10,          // CRUCIAL: Allows up to 5 skipped characters inside a word (e.g., G[mai]l)
+        });
 
         async function loadBookmarks() {
             try {
@@ -452,8 +434,11 @@
                         });
                     }
                 });
-
+				
+				haystack = flatBookmarks.map(function(b) { return b.displayName; });
+				
                 searchResults = flatBookmarks.slice();
+                currentUfInfo = null;
                 renderResults();
 
                 statusMessage.className = "status-badge status-success";
@@ -465,71 +450,101 @@
             }
         }
 
-        function renderResults() {
-            if (searchResults.length === 0) {
-                list.innerHTML = '<div style="padding:16px;color:#6b7280;text-align:center;font-size:14px;">No matches found</div>';
-                counter.textContent = '0/' + flatBookmarks.length;
-                return;
-            }
-
-            counter.textContent = searchResults.length + '/' + flatBookmarks.length;
-            list.innerHTML = '';
-
-            var query = input.value.trim().toLowerCase().replace(/\s+/g, '');
-
-            searchResults.forEach(function(item, index) {
-                var isCurrent = selectedIndex >= 0 && index === selectedIndex;
-
-                var itemDiv = document.createElement('div');
-                itemDiv.className = 'row-item ' + (isCurrent ? 'active' : '');
-
-                var titleSpan = document.createElement('span');
-                titleSpan.className = 'row-title';
-
-                // --- CHARACTER LEVEL HIGHLIGHTING ENGINE ---
-                if (query) {
-                    var text = item.displayName;
-                    var highlightedHtml = '';
-                    var queryIdx = 0;
-
-                    for (var i = 0; i < text.length; i++) {
-                        if (queryIdx < query.length && text[i].toLowerCase() === query[queryIdx]) {
-                            highlightedHtml += '<span class="highlight-char">' + text[i] + '</span>';
-                            queryIdx++;
-                        } else {
-                            highlightedHtml += text[i];
-                        }
-                    }
-                    titleSpan.innerHTML = highlightedHtml;
-                } else {
-                    titleSpan.textContent = item.displayName;
-                }
-                // -------------------------------------------
-
-                var urlSpan = document.createElement('span');
-                urlSpan.className = 'row-url';
-                urlSpan.textContent = '🔗 ' + item.url;
-
-                itemDiv.appendChild(titleSpan);
-                itemDiv.appendChild(urlSpan);
-
-                itemDiv.onclick = function(e) {
-                    var target = (e.ctrlKey || e.metaKey) ? '_blank' : '_self';
-                    window.open(item.url, target);
-                    input.focus();
-                };
-                list.appendChild(itemDiv);
-            });
-
-            var activeEl = list.children[selectedIndex];
-            if (activeEl) activeEl.scrollIntoView({ block: 'nearest' });
-        }
+		function renderResults() {
+    		if (searchResults.length === 0) {
+        		list.innerHTML = '<div style="padding:16px;color:#6b7280;text-align:center;font-size:14px;">No matches found</div>';
+        		counter.textContent = '0/' + flatBookmarks.length;
+        		return;
+    		}
+		
+    		counter.textContent = searchResults.length + '/' + flatBookmarks.length;
+    		list.innerHTML = '';
+		
+    		searchResults.forEach(function(item, index) {
+        		var isCurrent = selectedIndex >= 0 && index === selectedIndex;
+		
+        		var itemDiv = document.createElement('div');
+        		itemDiv.className = 'row-item ' + (isCurrent ? 'active' : '');
+		
+        		var titleSpan = document.createElement('span');
+        		titleSpan.className = 'row-title';
+		
+  				// --- UFUZZY HIGH-PERFORMANCE HIGHLIGHTING ENGINE ---
+				if (currentUfInfo && currentUfInfo.ranges && currentUfInfo.ranges[index]) {
+    				var text = item.displayName;
+    				var ranges = currentUfInfo.ranges[index];
+    				
+    				// uFuzzy.highlight takes: (text, ranges, custom_wrapping_callback)
+    				titleSpan.innerHTML = uFuzzy.highlight(text, ranges, function(part, matched) {
+						return matched ? '<span class="highlight-char">' + part + '</span>' : part;
+					});
+				} else {
+    				// Fallback for empty search inputs or when no match ranges exist
+    				titleSpan.textContent = item.displayName;
+				}
+				// ----------------------------------------------------
+						
+        		var urlSpan = document.createElement('span');
+        		urlSpan.className = 'row-url';
+        		urlSpan.textContent = '🔗 ' + item.url;
+		
+        		itemDiv.appendChild(titleSpan);
+        		itemDiv.appendChild(urlSpan);
+		
+        		itemDiv.onclick = function(e) {
+            		var target = (e.ctrlKey || e.metaKey) ? '_blank' : '_self';
+            		window.open(item.url, target);
+            		input.focus();
+        		};
+        		list.appendChild(itemDiv);
+    		});
+		
+    		var activeEl = list.children[selectedIndex];
+    		if (activeEl) activeEl.scrollIntoView({ block: 'nearest' });
+		}
+		
 
         input.oninput = function() {
-            searchResults = nativeFuzzyMatch(input.value.trim(), flatBookmarks);
-            selectedIndex = -1;
-            renderResults();
-        };
+    		var query = input.value.trim();
+    		if (!query) {
+        		searchResults = flatBookmarks.slice();
+        		currentUfInfo = null;
+    		} else {
+        		// var haystack = flatBookmarks.map(function(b) { return b.displayName; });
+        		
+				const [idxs, info, order] = uf.search(haystack, query, 3)
+
+				// console.log('idxs: ' + idxs)
+				// console.log('info: ' + info)
+				// console.log('order: ' + order)
+        		
+        		if (idxs && idxs.length > 0) {	
+            		searchResults = [];
+            		var rangesArr = []; // Clear array for range indices
+            		
+					if (info && order && order.length > 0) {
+						for (var i = 0; i < order.length; i++) {
+							var infoIdx = order[i];
+							searchResults.push(flatBookmarks[info.idx[infoIdx]]);
+							rangesArr.push(info.ranges[infoIdx]); // Store match ranges
+						}
+						currentUfInfo = { ranges: rangesArr }; // Expose ranges object
+					} else {
+						// Gracefully render pre-filtered but unordered matches without highlights
+						for (var i = 0; i < idxs.length; i++) {
+							searchResults.push(flatBookmarks[idxs[i]]);
+						}
+						currentUfInfo = null;
+            		}
+        		} else {
+            		searchResults = [];
+            		currentUfInfo = null;
+        		}
+    		}
+    		selectedIndex = -1;
+    		renderResults();
+		};
+
 
         window.onkeydown = function(e) {
             if (e.key === '/' && modal.classList.contains('hidden')) {
@@ -538,6 +553,7 @@
                 input.focus();
                 input.value = '';
                 searchResults = flatBookmarks.slice();
+                currentUfInfo = null;
                 selectedIndex = -1;
                 renderResults();
                 return;
@@ -551,7 +567,6 @@
             } else if (e.key === 'ArrowDown') {
                 e.preventDefault();
                 if (searchResults.length > 0) {
-                    // If we are at the very bottom item, wrap back to unselected (-1)
                     if (selectedIndex === searchResults.length - 1) {
                         selectedIndex = -1;
                     } else {
@@ -562,11 +577,9 @@
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
                 if (searchResults.length > 0) {
-                    // If we are at the very top item (0), move up to unselected (-1)
                     if (selectedIndex === 0) {
                         selectedIndex = -1;
                     } else if (selectedIndex === -1) {
-                        // If currently unselected, ArrowUp wraps clean to the bottom item
                         selectedIndex = searchResults.length - 1;
                     } else {
                         selectedIndex--;
@@ -579,8 +592,6 @@
                     var target = e.ctrlKey ? '_blank' : '_self';
                     window.open(searchResults[selectedIndex].url, target);
                 }
-                // Kept open! We just force focus back onto the input field
-                // so you can immediately type your next query
                 input.focus();
                 renderResults();
             }
@@ -597,7 +608,6 @@
 
         const themeSelector = document.getElementById('themeSelector');
 
-        // Simple function that only applies what was directly chosen
         function applyTheme(themeName) {
             if (themeName === 'default' || !themeName) {
                 document.body.removeAttribute('data-theme');
@@ -606,21 +616,18 @@
             }
         }
 
-        // 1. Initialize selection setting state on reload execution
         const savedTheme = localStorage.getItem('theme') || 'default';
         if (themeSelector) {
             themeSelector.value = savedTheme;
         }
         applyTheme(savedTheme);
 
-        // 2. Listen for manual dropdown selection changes
         themeSelector.addEventListener('change', (e) => {
             const selected = e.target.value;
             localStorage.setItem('theme', selected);
             applyTheme(selected);
         });
 
-				// --- FONT CONFIGURATION ENGINE ---
 		const fontSelector = document.getElementById('fontSelector');
 
 		function applyFont(fontName) {
@@ -631,14 +638,12 @@
 			}
 		}
 
-		// 1. Initialise font configuration from cache on reload
 		const savedFont = localStorage.getItem('site-font') || 'default';
 		if (fontSelector) {
 			fontSelector.value = savedFont;
 		}
 		applyFont(savedFont);
 
-		// 2. Bind change listener onto font dropdown node
 		if (fontSelector) {
 			fontSelector.addEventListener('change', (e) => {
 				const selectedFont = e.target.value;
