@@ -404,11 +404,14 @@
         const counter = document.getElementById('itemCounter');
         const statusMessage = document.getElementById('statusMessage');
 
+        const outOfOrder = 15;
+        const intraIns = 10;
+
         // Initialize uFuzzy instance globally
         // Global uFuzzy Configuration optimized for rapid launcher shortcuts (like 'gl' for 'Gmail')
 		const uf = new uFuzzy({
 			intraMode: 0,         // Allows typo substitutions
-			intraIns: 10,          // CRUCIAL: Allows up to 5 skipped characters inside a word (e.g., G[mai]l)
+			intraIns: intraIns,   // CRUCIAL: Allows up to 5 skipped characters inside a word (e.g., G[mai]l)
         });
 
         async function loadBookmarks() {
@@ -502,7 +505,6 @@
     		var activeEl = list.children[selectedIndex];
     		if (activeEl) activeEl.scrollIntoView({ block: 'nearest' });
 		}
-		
 
         input.oninput = function() {
     		var query = input.value.trim();
@@ -512,7 +514,7 @@
     		} else {
         		// var haystack = flatBookmarks.map(function(b) { return b.displayName; });
         		
-				const [idxs, info, order] = uf.search(haystack, query, 3)
+				const [idxs, info, order] = uf.search(haystack, query, outOfOrder)
 
 				// console.log('idxs: ' + idxs)
 				// console.log('info: ' + info)
@@ -544,7 +546,6 @@
     		selectedIndex = -1;
     		renderResults();
 		};
-
 
         window.onkeydown = function(e) {
             if (e.key === '/' && modal.classList.contains('hidden')) {
